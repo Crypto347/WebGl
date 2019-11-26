@@ -17,6 +17,8 @@ import {
 import MovingBalls from './components/MovingBalls/movingBalls';
 import Paint from './components/Paint/paint';
 
+import ThreeDSphere from './components/3DSphere/threeDSphere';
+
 /**
 * Styles
 */
@@ -37,15 +39,10 @@ export class App extends Component {
    render(){
       return(
             <div className="app">
-               {/* <Route 
-                  exact 
-                  path="/"
-                  component={ MovingBalls }
-               /> */}
                 <Route 
                   exact 
                   path="/"
-                  component={ Paint }
+                  component={ ThreeDSphere }
                />
             </div>
       );
