@@ -89,11 +89,12 @@ export class ThreeDSphere extends Component {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         const shaderProgram = this.initShaderProgram(this.gl, Shaders.vert, Shaders.frag);
-        // const shaderProgram = useProgram(gl, Shaders.vert, Shaders.frag);
+        
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
               vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+              vertexColor: this.gl.getAttribLocation(shaderProgram, 'aVertexColor'),
             },
             uniformLocations: {
               projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
@@ -101,8 +102,8 @@ export class ThreeDSphere extends Component {
             },
         };
           
-
         const buffers =  this.initBuffers(this.gl);
+        console.log(buffers)
         this.drawScene(this.gl, programInfo, buffers);
     }
 
@@ -144,7 +145,7 @@ export class ThreeDSphere extends Component {
             gl.deleteShader(shader);
             return null;
         }
-        
+      
         return shader;
     }
 
@@ -153,12 +154,14 @@ export class ThreeDSphere extends Component {
         // Create a buffer for the square's positions.
         
         const positionBuffer = gl.createBuffer();
-        
+        const colorBuffer = gl.createBuffer();
+console.log(colorBuffer)
         // Select the positionBuffer as the one to apply buffer
         // operations to from here out.
         
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+
         // Now create an array of positions for the square.
         
         const positions = [
@@ -166,6 +169,13 @@ export class ThreeDSphere extends Component {
             1.0,  1.0,
             -1.0, -1.0,
             1.0, -1.0,
+        ];
+
+        const colors = [
+            1.0,  1.0,  1.0,  1.0,    // white
+            1.0,  0.0,  0.0,  1.0,    // red
+            0.0,  1.0,  0.0,  1.0,    // green
+            0.0,  0.0,  1.0,  1.0,    // blue
         ];
         
         // Now pass the list of positions into WebGL to build the
@@ -175,9 +185,13 @@ export class ThreeDSphere extends Component {
         gl.bufferData(gl.ARRAY_BUFFER,
                         new Float32Array(positions),
                         gl.STATIC_DRAW);
-        
+        gl.bufferData(gl.ARRAY_BUFFER, 
+                        new Float32Array(colors), 
+                        gl.STATIC_DRAW);
+
         return {
             position: positionBuffer,
+            color: colorBuffer,
         };
     }
 
@@ -243,7 +257,27 @@ export class ThreeDSphere extends Component {
           gl.enableVertexAttribArray(
               programInfo.attribLocations.vertexPosition);
         }
-      
+
+        // Tell WebGL how to pull out the colors from the color buffer
+        // into the vertexColor attribute.
+        {
+            const numComponents = 4;
+            const type = gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.vertexColor,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.vertexColor);
+        }
+  
         // Tell WebGL to use our program when drawing
       
         gl.useProgram(programInfo.program);
@@ -260,9 +294,9 @@ export class ThreeDSphere extends Component {
             modelViewMatrix);
       
         {
-          const offset = 0;
-          const vertexCount = 4;
-          gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+            const offset = 0;
+            const vertexCount = 4;
+            gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
       }
 
