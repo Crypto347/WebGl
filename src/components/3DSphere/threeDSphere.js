@@ -151,33 +151,37 @@ export class ThreeDSphere extends Component {
 
     initBuffers = (gl) => {
 
+        // Now create an array of positions for the square.
+    
+        const positions = [
+        -1.0,  1.0,
+        1.0,  1.0,
+        -1.0, -1.0,
+        1.0, -1.0,
+        ];
+
+        // const positions = [
+        //     -0.5,  -0.5,
+        //     0.5,  -0.5,
+        //     0.0, 0.5,
+        // ];
+
+        const colors = [
+            1.0,  1.0,  1.0,     // white
+            1.0,  0.0,  0.0,    // red
+            0.0,  1.0,  0.0,    // green
+            0.0,  0.0,  1.0,     // blue
+        ];
+
         // Create a buffer for the square's positions.
         
         const positionBuffer = gl.createBuffer();
-        const colorBuffer = gl.createBuffer();
-console.log(colorBuffer)
+
         // Select the positionBuffer as the one to apply buffer
         // operations to from here out.
-        
+
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 
-        // Now create an array of positions for the square.
-        
-        const positions = [
-            -1.0,  1.0,
-            1.0,  1.0,
-            -1.0, -1.0,
-            1.0, -1.0,
-        ];
-
-        const colors = [
-            1.0,  1.0,  1.0,  1.0,    // white
-            1.0,  0.0,  0.0,  1.0,    // red
-            0.0,  1.0,  0.0,  1.0,    // green
-            0.0,  0.0,  1.0,  1.0,    // blue
-        ];
-        
         // Now pass the list of positions into WebGL to build the
         // shape. We do this by creating a Float32Array from the
         // JavaScript array, then use it to fill the current buffer.
@@ -185,6 +189,11 @@ console.log(colorBuffer)
         gl.bufferData(gl.ARRAY_BUFFER,
                         new Float32Array(positions),
                         gl.STATIC_DRAW);
+
+
+
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, 
                         new Float32Array(colors), 
                         gl.STATIC_DRAW);
@@ -240,28 +249,28 @@ console.log(colorBuffer)
         // Tell WebGL how to pull out the positions from the position
         // buffer into the vertexPosition attribute.
         {
-          const numComponents = 2;  // pull out 2 values per iteration
-          const type = gl.FLOAT;    // the data in the buffer is 32bit floats
-          const normalize = false;  // don't normalize
-          const stride = 0;         // how many bytes to get from one set of values to the next
-                                    // 0 = use type and numComponents above
-          const offset = 0;         // how many bytes inside the buffer to start from
-          gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
-          gl.vertexAttribPointer(
-              programInfo.attribLocations.vertexPosition,
-              numComponents,
-              type,
-              normalize,
-              stride,
-              offset);
-          gl.enableVertexAttribArray(
-              programInfo.attribLocations.vertexPosition);
+            const numComponents = 2;  // pull out 2 values per iteration
+            const type = gl.FLOAT;    // the data in the buffer is 32bit floats
+            const normalize = false;  // don't normalize
+            const stride = 0;         // how many bytes to get from one set of values to the next
+                                        // 0 = use type and numComponents above
+            const offset = 0;         // how many bytes inside the buffer to start from
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.vertexPosition,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.vertexPosition);
         }
 
         // Tell WebGL how to pull out the colors from the color buffer
         // into the vertexColor attribute.
         {
-            const numComponents = 4;
+            const numComponents = 2;
             const type = gl.FLOAT;
             const normalize = false;
             const stride = 0;
