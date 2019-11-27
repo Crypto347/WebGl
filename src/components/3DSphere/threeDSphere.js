@@ -78,8 +78,8 @@ export class ThreeDSphere extends Component {
         const canvas = this.refs.canvas;
         // const gl = useWebGLContext();
         this.gl = canvas.getContext("webgl");
-        
-           
+        let then = 0;
+        this.squareRotation = 0.0;
         if (this.gl === null) {
             alert("Unable to initialize WebGL. Your browser or machine may not support it.");
             return;
@@ -103,9 +103,32 @@ export class ThreeDSphere extends Component {
         };
           
         const buffers =  this.initBuffers(this.gl);
-        console.log(buffers)
-        this.drawScene(this.gl, programInfo, buffers);
+        // this.drawScene(this.gl, programInfo, buffers);
+        // this.renderRectangle(this.gl, programInfo, buffers, then);
+        // requestAnimationFrame(this.renderRectangle(gl, programInfo, buffers, then, now));
+
+        const render = (now) => {
+            now *= 0.001;  // convert to seconds
+            const deltaTime = now - then;
+            then = now;
+            // console.log(deltaTime)
+            this.drawScene(this.gl, programInfo, buffers, deltaTime);
+        
+            requestAnimationFrame(render);
+        }
+        requestAnimationFrame(render);
     }
+
+    // renderRectangle = ( now) => {
+    //     now *= 0.001;  // convert to seconds
+    //     const deltaTime = now - then;
+    //     then = now;
+
+    //     this.drawScene(gl, programInfo, buffers, deltaTime);
+    //     console.log(deltaTime)
+    //     requestAnimationFrame(this.renderRectangle);
+        
+    // }
 
     initShaderProgram = (gl, vsSource, fsSource) => {
         const vertexShader = this.loadShader(gl, gl.VERTEX_SHADER, vsSource);
@@ -167,10 +190,10 @@ export class ThreeDSphere extends Component {
         // ];
 
         const colors = [
-            1.0,  1.0,  1.0,     // white
-            1.0,  0.0,  0.0,    // red
-            0.0,  1.0,  0.0,    // green
-            0.0,  0.0,  1.0,     // blue
+            1.0,  1.0,  1.0, 1.0,    // white
+            1.0,  0.0,  0.0, 1.0,   // red
+            0.0,  1.0,  0.0, 1.0,   // green
+            0.0,  0.0,  1.0, 1.0,   // blue
         ];
 
         // Create a buffer for the square's positions.
@@ -204,12 +227,14 @@ export class ThreeDSphere extends Component {
         };
     }
 
-    drawScene = (gl, programInfo, buffers) => {
+    drawScene = (gl, programInfo, buffers, deltaTime) => {
+   
+
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-      
+       
         // Clear the canvas before we start drawing on it.
       
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -241,10 +266,14 @@ export class ThreeDSphere extends Component {
       
         // Now move the drawing position a bit to where we want to
         // start drawing the square.
-      
+
         mat4.translate(modelViewMatrix,     // destination matrix
                        modelViewMatrix,     // matrix to translate
                        [-0.0, 0.0, -6.0]);  // amount to translate
+        mat4.rotate(modelViewMatrix,  // destination matrix
+                    modelViewMatrix,  // matrix to rotate
+                    this.squareRotation,   // amount to rotate in radians
+                    [0, 0, 1]);       // axis to rotate around
       
         // Tell WebGL how to pull out the positions from the position
         // buffer into the vertexPosition attribute.
@@ -270,7 +299,7 @@ export class ThreeDSphere extends Component {
         // Tell WebGL how to pull out the colors from the color buffer
         // into the vertexColor attribute.
         {
-            const numComponents = 3;
+            const numComponents = 4;
             const type = gl.FLOAT;
             const normalize = false;
             const stride = 0;
@@ -307,7 +336,11 @@ export class ThreeDSphere extends Component {
             const vertexCount = 4;
             gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
         }
-      }
+
+        // Update the rotation for the next draw
+
+        this.squareRotation += deltaTime;
+    }
 
     /**
     * Markup
