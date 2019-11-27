@@ -270,7 +270,7 @@ export class ThreeDSphere extends Component {
         // Tell WebGL how to pull out the colors from the color buffer
         // into the vertexColor attribute.
         {
-            const numComponents = 2;
+            const numComponents = 3;
             const type = gl.FLOAT;
             const normalize = false;
             const stride = 0;
