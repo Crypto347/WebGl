@@ -79,7 +79,8 @@ export class ThreeDSphere extends Component {
         // const gl = useWebGLContext();
         this.gl = canvas.getContext("webgl");
         let then = 0;
-        this.squareRotation = 0.0;
+        // this.squareRotation = 0.0;
+        this.cubeRotation = 0.0;
         if (this.gl === null) {
             alert("Unable to initialize WebGL. Your browser or machine may not support it.");
             return;
@@ -173,15 +174,57 @@ export class ThreeDSphere extends Component {
     }
 
     initBuffers = (gl) => {
+        var colors = [];
+        //cube
 
-        // Now create an array of positions for the square.
-    
         const positions = [
-        -1.0,  1.0,
-        1.0,  1.0,
-        -1.0, -1.0,
-        1.0, -1.0,
-        ];
+            // Front face
+            -1.0, -1.0,  1.0,
+             1.0, -1.0,  1.0,
+             1.0,  1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            
+            // Back face
+            -1.0, -1.0, -1.0,
+            -1.0,  1.0, -1.0,
+             1.0,  1.0, -1.0,
+             1.0, -1.0, -1.0,
+            
+            // Top face
+            -1.0,  1.0, -1.0,
+            -1.0,  1.0,  1.0,
+             1.0,  1.0,  1.0,
+             1.0,  1.0, -1.0,
+            
+            // Bottom face
+            -1.0, -1.0, -1.0,
+             1.0, -1.0, -1.0,
+             1.0, -1.0,  1.0,
+            -1.0, -1.0,  1.0,
+            
+            // Right face
+             1.0, -1.0, -1.0,
+             1.0,  1.0, -1.0,
+             1.0,  1.0,  1.0,
+             1.0, -1.0,  1.0,
+            
+            // Left face
+            -1.0, -1.0, -1.0,
+            -1.0, -1.0,  1.0,
+            -1.0,  1.0,  1.0,
+            -1.0,  1.0, -1.0,
+          ];
+
+        //square
+
+        // const positions = [
+        // -1.0,  1.0,
+        // 1.0,  1.0,
+        // -1.0, -1.0,
+        // 1.0, -1.0,
+        // ];
+
+        //triangle
 
         // const positions = [
         //     -0.5,  -0.5,
@@ -189,12 +232,30 @@ export class ThreeDSphere extends Component {
         //     0.0, 0.5,
         // ];
 
-        const colors = [
-            1.0,  1.0,  1.0, 1.0,    // white
-            1.0,  0.0,  0.0, 1.0,   // red
-            0.0,  1.0,  0.0, 1.0,   // green
-            0.0,  0.0,  1.0, 1.0,   // blue
+        //color of each surface
+
+        const faceColors = [
+            [1.0,  1.0,  1.0,  1.0],    // Front face: white
+            [1.0,  0.0,  0.0,  1.0],    // Back face: red
+            [0.0,  1.0,  0.0,  1.0],    // Top face: green
+            [0.0,  0.0,  1.0,  1.0],    // Bottom face: blue
+            [1.0,  1.0,  0.0,  1.0],    // Right face: yellow
+            [1.0,  0.0,  1.0,  1.0],    // Left face: purple
         ];
+
+        faceColors.map((el, i) => {
+            colors = colors.concat(el, el, el, el)
+        })
+        console.log(colors)
+
+        //gradient color
+
+        // const colors = [
+        //     1.0,  1.0,  1.0, 1.0,    // white
+        //     1.0,  0.0,  0.0, 1.0,   // red
+        //     0.0,  1.0,  0.0, 1.0,   // green
+        //     0.0,  0.0,  1.0, 1.0,   // blue
+        // ];
 
         // Create a buffer for the square's positions.
         
@@ -221,15 +282,35 @@ export class ThreeDSphere extends Component {
                         new Float32Array(colors), 
                         gl.STATIC_DRAW);
 
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+        // This array defines each face as two triangles, using the
+        // indices into the vertex array to specify each triangle's
+        // position.
+
+        const indices = [
+            0,  1,  2,      0,  2,  3,    // front
+            4,  5,  6,      4,  6,  7,    // back
+            8,  9,  10,     8,  10, 11,   // top
+            12, 13, 14,     12, 14, 15,   // bottom
+            16, 17, 18,     16, 18, 19,   // right
+            20, 21, 22,     20, 22, 23,   // left
+        ];
+
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,
+                        new Uint16Array(indices), 
+                        gl.STATIC_DRAW);
+
         return {
             position: positionBuffer,
             color: colorBuffer,
+            indices: indexBuffer,
         };
     }
 
     drawScene = (gl, programInfo, buffers, deltaTime) => {
    
-
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -269,16 +350,25 @@ export class ThreeDSphere extends Component {
 
         mat4.translate(modelViewMatrix,     // destination matrix
                        modelViewMatrix,     // matrix to translate
-                       [-0.0, 0.0, -6.0]);  // amount to translate
-        mat4.rotate(modelViewMatrix,  // destination matrix
-                    modelViewMatrix,  // matrix to rotate
-                    this.squareRotation,   // amount to rotate in radians
-                    [0, 0, 1]);       // axis to rotate around
+                       [-0.0, 0.0, -10.0]);  // amount to translate
+        // square rotation
+
+        // mat4.rotate(modelViewMatrix,  // destination matrix
+        //             modelViewMatrix,  // matrix to rotate
+        //             this.squareRotation,   // amount to rotate in radians
+        //             [0, 0, 1]);       // axis to rotate around
+
+        // cube rotation
+
+        mat4.rotate(modelViewMatrix, 
+                    modelViewMatrix, 
+                    this.cubeRotation * .7, 
+                    [1, 1, 1]);
       
         // Tell WebGL how to pull out the positions from the position
         // buffer into the vertexPosition attribute.
         {
-            const numComponents = 2;  // pull out 2 values per iteration
+            const numComponents = 3;  // pull out 2 values per iteration
             const type = gl.FLOAT;    // the data in the buffer is 32bit floats
             const normalize = false;  // don't normalize
             const stride = 0;         // how many bytes to get from one set of values to the next
@@ -316,6 +406,9 @@ export class ThreeDSphere extends Component {
                 programInfo.attribLocations.vertexColor);
         }
   
+        // Tell WebGL which indices to use to index the vertices
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+
         // Tell WebGL to use our program when drawing
       
         gl.useProgram(programInfo.program);
@@ -331,15 +424,23 @@ export class ThreeDSphere extends Component {
             false,
             modelViewMatrix);
       
+        // {
+        //     const offset = 0;
+        //     const vertexCount = 4;
+        //     gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+        // }
+
         {
+            const vertexCount = 36;
+            const type = gl.UNSIGNED_SHORT;
             const offset = 0;
-            const vertexCount = 4;
-            gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
-        }
+            gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
+          }
 
         // Update the rotation for the next draw
 
-        this.squareRotation += deltaTime;
+        // this.squareRotation += deltaTime;
+        this.cubeRotation += deltaTime;
     }
 
     /**
