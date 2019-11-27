@@ -1,24 +1,26 @@
 export const vert = `
-attribute vec4 aVertexPosition;
-attribute vec4 aVertexColor;
+  attribute vec4 aVertexPosition;
+  attribute vec2 aTextureCoord;
 
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+  uniform mat4 uModelViewMatrix;
+  uniform mat4 uProjectionMatrix;
 
-varying lowp vec4 vColor;
+  varying highp vec2 vTextureCoord;
 
-void main(void) {
-  gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-  vColor = aVertexColor;
-}
+  void main(void) {
+    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+    vTextureCoord = aTextureCoord;
+  }
 `;
 
 export const frag = `
-varying lowp vec4 vColor;
+  varying highp vec2 vTextureCoord;
 
-void main(void) {
-    gl_FragColor = vColor;
-}
+  uniform sampler2D uSampler;
+
+  void main(void) {
+    gl_FragColor = texture2D(uSampler, vTextureCoord);
+  }
 `;
 
 // export const vert = `

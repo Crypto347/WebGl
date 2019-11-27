@@ -16,8 +16,7 @@ import {
 
 import MovingBalls from './components/MovingBalls/movingBalls';
 import Paint from './components/Paint/paint';
-
-import ThreeDSphere from './components/3DSphere/threeDSphere';
+import Cube from './components/Cube/cube';
 
 /**
 * Styles
@@ -42,7 +41,7 @@ export class App extends Component {
                 <Route 
                   exact 
                   path="/"
-                  component={ ThreeDSphere }
+                  component={ Cube }
                />
             </div>
       );
