@@ -6,5 +6,6 @@ export {
     getRandomRadius,
     getArrayOfCircles,
     getRandomColor,
-    getRandomAlfa
+    getRandomAlfa,
+    getRandomInt
 } from './utility';

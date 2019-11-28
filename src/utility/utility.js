@@ -31,3 +31,7 @@ export const getRandomColor = () => {
 export const getRandomAlfa = () => {
     return  Math.random();
 } 
+
+export const getRandomInt = (range) => {
+    return Math.floor(Math.random() * range);
+}

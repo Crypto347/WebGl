@@ -58,6 +58,13 @@ import * as Shaders from './Shaders';
 import * as WebGlUtility from '../../WebGlUtility';
 
 /**
+* Utility
+*/
+
+import * as Utility from '../../utility';
+
+
+/**
 * Ex component definition and export
 */
 
@@ -92,7 +99,8 @@ export class Ex extends Component {
                position: this.gl.getAttribLocation(shaderProgram, "a_position")
             },
             uniformLocations: {
-                resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution")
+                resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
+                color: this.gl.getUniformLocation(shaderProgram, "u_color")
             },
         };
           
@@ -139,7 +147,8 @@ export class Ex extends Component {
 
         gl.useProgram(programInfo.program);
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-        
+         
+
         {
             const numComponents = 2;
             const type = gl.FLOAT;
@@ -157,14 +166,38 @@ export class Ex extends Component {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.position);
         }
-       
-        {
-            const vertexCount = 6;
-            const type = gl.TRIANGLES;
-            const offset = 0;
-            gl.drawArrays(type, offset, vertexCount);
+
+        for(let i = 0; i < 50; i++){
+            this.setRectangle(gl, Utility.getRandomInt(500), Utility.getRandomInt(500), Utility.getRandomInt(500), Utility.getRandomInt(500))
+            gl.uniform4f(programInfo.uniformLocations.color, Math.random(), Math.random(), Math.random(), 1);
+            {
+                const vertexCount = 6;
+                const type = gl.TRIANGLES;
+                const offset = 0;
+                gl.drawArrays(type, offset, vertexCount);
+            }
         }
+       
     }
+
+    setRectangle = (gl, x, y, width, height) => {
+        var x1 = x;
+        var x2 = x + width;
+        var y1 = y;
+        var y2 = y + height;
+       
+        // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
+        // whatever buffer is bound to the `ARRAY_BUFFER` bind point
+        // but so far we only have one buffer. If we had more than one
+        // buffer we'd want to bind that buffer to `ARRAY_BUFFER` first.
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+           x1, y1,
+           x2, y1,
+           x1, y2,
+           x1, y2,
+           x2, y1,
+           x2, y2]), gl.STATIC_DRAW);
+      }
 
     /**
     * Markup
