@@ -58,10 +58,10 @@ import * as Shaders from './Shaders';
 import * as WebGlUtility from '../../WebGlUtility';
 
 /**
-* Cube component definition and export
+* Ex component definition and export
 */
 
-export class Cube extends Component {
+export class Ex extends Component {
 
     
     /**
@@ -92,6 +92,7 @@ export class Cube extends Component {
                position: this.gl.getAttribLocation(shaderProgram, "a_position")
             },
             uniformLocations: {
+                resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution")
             },
         };
           
@@ -106,11 +107,14 @@ export class Cube extends Component {
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   
         const positions = [
-            0, 0,
-            0, 0.5,
-            0.7, 0,
+            10, 20,
+            80, 20,
+            10, 30,
+            10, 30,
+            80, 20,
+            80, 30,
         ];
-       
+        
         gl.bufferData(gl.ARRAY_BUFFER,
                         new Float32Array(positions),
                         gl.STATIC_DRAW);
@@ -133,7 +137,9 @@ export class Cube extends Component {
       
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.useProgram(programInfo.program)
+        gl.useProgram(programInfo.program);
+        gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
+        
         {
             const numComponents = 2;
             const type = gl.FLOAT;
@@ -151,9 +157,9 @@ export class Cube extends Component {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.position);
         }
-
+       
         {
-            const vertexCount = 3;
+            const vertexCount = 6;
             const type = gl.TRIANGLES;
             const offset = 0;
             gl.drawArrays(type, offset, vertexCount);
@@ -184,5 +190,5 @@ export default connect(
             // moveCircleXCoordinate: bindActionCreators(Actions.moveCircleXCoordinate, dispatch),
         };
     }
-)(Cube);
+)(Ex);
  
