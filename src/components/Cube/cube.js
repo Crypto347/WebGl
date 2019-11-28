@@ -91,14 +91,16 @@ export class Cube extends Component {
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-              vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-            //   vertexColor: this.gl.getAttribLocation(shaderProgram, 'aVertexColor'),
-            textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                //   vertexColor: this.gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+                textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                vertexNormal: this.gl.getAttribLocation(shaderProgram, 'aVertexNormal'),
             },
             uniformLocations: {
-              projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-              modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-              uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                normalMatrix: this.gl.getUniformLocation(shaderProgram, 'uNormalMatrix'),
             },
         };
           
@@ -342,6 +344,48 @@ export class Cube extends Component {
         //     0.0,  0.0,  1.0, 1.0,   // blue
         // ];
 
+
+        /**
+        * Building the normals for the vertices
+        */
+
+        const vertexNormals = [
+            // Front
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+             0.0,  0.0,  1.0,
+        
+            // Back
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+             0.0,  0.0, -1.0,
+        
+            // Top
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+             0.0,  1.0,  0.0,
+        
+            // Bottom
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+             0.0, -1.0,  0.0,
+        
+            // Right
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+             1.0,  0.0,  0.0,
+        
+            // Left
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0,
+            -1.0,  0.0,  0.0
+        ];
         /**
         * Create a buffer for the square's positions.
         */
@@ -435,12 +479,19 @@ export class Cube extends Component {
             0.0,  1.0,
           ];
         
-          gl.bufferData(gl.ARRAY_BUFFER, 
-                        new Float32Array(textureCoordinates),
-                        gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, 
+                    new Float32Array(textureCoordinates),
+                    gl.STATIC_DRAW);
         
+        const normalBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, 
+                        new Float32Array(vertexNormals),
+                        gl.STATIC_DRAW);
+
         return {
             position: positionBuffer,
+            normal: normalBuffer,
             textureCoord: textureCoordBuffer,
             // color: colorBuffer,
             indices: indexBuffer,
@@ -519,6 +570,10 @@ export class Cube extends Component {
                     this.cubeRotation * .7, 
                     [1, 1, 1]);
       
+
+        const normalMatrix = mat4.create();
+        mat4.invert(normalMatrix, modelViewMatrix);
+        mat4.transpose(normalMatrix, normalMatrix);
         /**
         * Tell WebGL how to pull out the positions from the position
         * buffer into the vertexPosition attribute.
@@ -586,6 +641,26 @@ export class Cube extends Component {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.textureCoord);
         }
+
+        // Tell WebGL how to pull out the normals from
+        // the normal buffer into the vertexNormal attribute.
+        {
+            const numComponents = 3;
+            const type = gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.vertexNormal,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.vertexNormal);
+        }
   
         /**
         * Tell WebGL which indices to use to index the vertices
@@ -612,6 +687,10 @@ export class Cube extends Component {
             false,
             modelViewMatrix);
       
+        gl.uniformMatrix4fv(
+            programInfo.uniformLocations.normalMatrix,
+            false,
+            normalMatrix);
         // {
         //     const offset = 0;
         //     const vertexCount = 4;
