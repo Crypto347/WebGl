@@ -58,6 +58,12 @@ import * as Shaders from './Shaders';
 import logo from '../../images/kuQpOb-logo-instagram-images.png';
 
 /**
+* Images
+*/
+
+import TomAndJerry from '../../video/Tom_.mp4';
+
+/**
 * Cube component definition and export
 */
 
@@ -78,6 +84,8 @@ export class Cube extends Component {
         let then = 0;
         // this.squareRotation = 0.0;
         this.cubeRotation = 0.0;
+        this.copyVideo = false;
+
         if (this.gl === null) {
             alert("Unable to initialize WebGL. Your browser or machine may not support it.");
             return;
@@ -104,20 +112,31 @@ export class Cube extends Component {
             },
         };
           
-        const buffers =  this.initBuffers(this.gl);
+        const buffers = this.initBuffers(this.gl);
         // this.drawScene(this.gl, programInfo, buffers);
 
         /**
-        * Load texture
+        * Load texture (image)
         */
 
-        const texture = this.loadTexture(this.gl, logo);
+        // const texture = this.loadTexture(this.gl, logo);
+
+        /**
+        * Load texture (video)
+        */
+
+        const texture = this.initTexture(this.gl, logo);
+        const video = this.setupVideo(TomAndJerry);
 
         const render = (now) => {
             now *= 0.001;  // convert to seconds
             const deltaTime = now - then;
             then = now;
-            // console.log(deltaTime)
+
+            if (this.copyVideo) {
+                this.updateTexture(this.gl, texture, video);
+            }
+
             this.drawScene(this.gl, programInfo, buffers, texture, deltaTime);
         
             requestAnimationFrame(render);
@@ -125,6 +144,90 @@ export class Cube extends Component {
         requestAnimationFrame(render);
     }
 
+    setupVideo = (url) => {
+        const video = document.createElement('video');
+      
+        var playing = false;
+        var timeupdate = false;
+      
+        video.autoplay = true;
+        video.muted = true;
+        video.loop = true;
+      
+        // Waiting for these 2 events ensures
+        // there is data in the video
+      
+        video.addEventListener('playing', () => {
+           playing = true;
+           checkReady();
+        }, true);
+      
+        video.addEventListener('timeupdate', () => {
+           timeupdate = true;
+           checkReady();
+        }, true);
+      
+        video.src = url;
+        video.play();
+      
+        const checkReady = () => {
+          if (playing && timeupdate) {
+            this.copyVideo = true;
+          }
+        }
+      
+        return video;
+    }
+
+    initTexture = (gl) => {
+        const texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+      
+        // Because video has to be download over the internet
+        // they might take a moment until it's ready so
+        // put a single pixel in the texture so we can
+        // use it immediately.
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = 1;
+        const height = 1;
+        const border = 0;
+        const srcFormat = gl.RGBA;
+        const srcType = gl.UNSIGNED_BYTE;
+        const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
+        gl.texImage2D(gl.TEXTURE_2D, 
+                        level, 
+                        internalFormat,
+                        width, 
+                        height, 
+                        border, 
+                        srcFormat, 
+                        srcType,
+                        pixel);
+      
+        // Turn off mips and set  wrapping to clamp to edge so it
+        // will work regardless of the dimensions of the video.
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      
+        return texture;
+    }
+
+    updateTexture = (gl, texture, video) => {
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const srcFormat = gl.RGBA;
+        const srcType = gl.UNSIGNED_BYTE;
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 
+                        level, 
+                        internalFormat,
+                        srcFormat, 
+                        srcType, 
+                        video);
+    }
+      
     /**
     * Initialize a texture and load an image.
     * When the image finished loading copy it into the texture.
@@ -568,7 +671,7 @@ export class Cube extends Component {
         mat4.rotate(modelViewMatrix, 
                     modelViewMatrix, 
                     this.cubeRotation * .7, 
-                    [1, 1, 1]);
+                    [0, 1, 1]);
       
 
         const normalMatrix = mat4.create();
