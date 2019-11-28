@@ -14,9 +14,8 @@ import {
 * Components
 */
 
-import MovingBalls from './components/MovingBalls/movingBalls';
-import Paint from './components/Paint/paint';
 import Cube from './components/Cube/cube';
+// import Ex from './components/Ex/ex';
 
 /**
 * Styles
