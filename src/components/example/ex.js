@@ -140,13 +140,13 @@ export class Ex extends Component {
        
         gl.bufferData(
             gl.ARRAY_BUFFER,
-            new Float32Array(
-              [ Math.random(), Math.random(), Math.random(), 1,
-                Math.random(), Math.random(), Math.random(), 1,
-                Math.random(), Math.random(), Math.random(), 1,
-                Math.random(), Math.random(), Math.random(), 1,
-                Math.random(), Math.random(), Math.random(), 1,
-                Math.random(), Math.random(), Math.random(), 1]),
+            new Uint8Array(
+              [ Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255]),
             gl.STATIC_DRAW);
 
         return {
@@ -216,8 +216,8 @@ export class Ex extends Component {
 
         {
             const numComponents = 4;
-            const type = gl.FLOAT;
-            const normalize = false;
+            const type = gl.UNSIGNED_BYTE;
+            const normalize = true;
             const stride = 0;
             const offset = 0;
             gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
