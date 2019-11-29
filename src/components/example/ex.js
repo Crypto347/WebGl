@@ -96,7 +96,8 @@ export class Ex extends Component {
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-               position: this.gl.getAttribLocation(shaderProgram, "a_position")
+               position: this.gl.getAttribLocation(shaderProgram, "a_position"),
+               color: this.gl.getAttribLocation(shaderProgram, "a_color")
             },
             uniformLocations: {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
@@ -115,37 +116,71 @@ export class Ex extends Component {
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
   
         const positions = [
-            10, 20,
-            80, 20,
-            10, 30,
-            10, 30,
-            80, 20,
-            80, 30,
+            300, 300,
+            550, 300,
+            300, 400,
+            300, 400,
+            550, 300,
+            550, 400,
         ];
         
         gl.bufferData(gl.ARRAY_BUFFER,
                         new Float32Array(positions),
                         gl.STATIC_DRAW);
 
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        let r1 = Math.random();
+        let b1 = Math.random();
+        let g1 = Math.random();
+       
+        let r2 = Math.random();
+        let b2 = Math.random();
+        let g2 = Math.random();
+       
+        gl.bufferData(
+            gl.ARRAY_BUFFER,
+            new Float32Array(
+              [ r1, b1, g1, 1,
+                r1, b1, g1, 1,
+                r1, b1, g1, 1,
+                r2, b2, g2, 1,
+                r2, b2, g2, 1,
+                r2, b2, g2, 1]),
+            gl.STATIC_DRAW);
+
         return {
-            position: positionBuffer
+            position: positionBuffer,
+            color: colorBuffer
         };
     }
 
     drawScene = (gl, programInfo, buffers, texture, deltaTime) => {
-        const shape = [
-            {
-                x1: 300, 
-                x2: 450, 
-                x3: 250, 
-                y1: 120,
-                y2: 200,
-                y3: 200,
-                r: 0.4,
-                g: 0.5,
-                b: 0.5
-            }
-        ]
+        // const shape = [
+        //     {
+        //         x: 300, 
+        //         y: 300, 
+        //         width: 250, 
+        //         height: 100
+        //     },
+        //     {
+        //         x: 300, 
+        //         y: 300, 
+        //         width: 250, 
+        //         height: 100
+        //     }
+            // {
+            //     x1: 300, 
+            //     x2: 450, 
+            //     x3: 250, 
+            //     y1: 120,
+            //     y2: 200,
+            //     y3: 200,
+            //     r: 0.6,
+            //     g: 0.4,
+            //     b: 0.7
+            // }
+        // ]
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -179,26 +214,38 @@ export class Ex extends Component {
                 programInfo.attribLocations.position);
         }
 
-        shape.map((el,i) => {
-            this.setTriangle(gl, el.x1, el.x2, el.x3, el.y1, el.y2, el.y3,)
-            gl.uniform4f(programInfo.uniformLocations.color, el.r, el.g, el.b, 1);
+        {
+            const numComponents = 4;
+            const type = gl.FLOAT;
+            const normalize = false;
+            const stride = 0;
+            const offset = 0;
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+            gl.vertexAttribPointer(
+                programInfo.attribLocations.color,
+                numComponents,
+                type,
+                normalize,
+                stride,
+                offset);
+            gl.enableVertexAttribArray(
+                programInfo.attribLocations.color);
+        }
+
+        // shape.map((el,i) => {
+            // this.setRectangle(gl, el.x, el.y, el.width, el.height)
+            // gl.uniform4f(programInfo.uniformLocations.color, el.r, el.g, el.b, 1);
             {
-                const vertexCount = 3;
+                const vertexCount = 6;
                 const type = gl.TRIANGLES;
                 const offset = 0;
                 gl.drawArrays(type, offset, vertexCount);
             }
-        })
+        // })
        
     }
 
     setTriangle = (gl, x1, x2, x3, y1, y2, y3) => {
-   
-       
-        // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
-        // whatever buffer is bound to the `ARRAY_BUFFER` bind point
-        // but so far we only have one buffer. If we had more than one
-        // buffer we'd want to bind that buffer to `ARRAY_BUFFER` first.
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
            x1, y1,
            x2, y2,
