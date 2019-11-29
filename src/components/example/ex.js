@@ -101,7 +101,8 @@ export class Ex extends Component {
             },
             uniformLocations: {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
-                color: this.gl.getUniformLocation(shaderProgram, "u_color")
+                color: this.gl.getUniformLocation(shaderProgram, "u_color"),
+                offset: this.gl.getUniformLocation(shaderProgram, "u_offset")
             },
         };
           
@@ -194,7 +195,7 @@ export class Ex extends Component {
 
         gl.useProgram(programInfo.program);
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-         
+        gl.uniform4fv(programInfo.uniformLocations.offset, [1, 0, 0, 0]);
 
         {
             const numComponents = 2;

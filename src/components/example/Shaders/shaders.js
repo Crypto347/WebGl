@@ -3,7 +3,8 @@ export const vert = `
   attribute vec4 a_color;
 
   uniform vec2 u_resolution;
- 
+  uniform vec4 u_offset;
+
   varying vec4 v_color;
 
   void main() {
@@ -16,7 +17,7 @@ export const vert = `
     // convert from 0->2 to -1->+1 (clip space)
     vec2 clipSpace = zeroToTwo - 1.0;
  
-    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
+    gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1) + u_offset;
     v_color = a_color;
   }
 `;
