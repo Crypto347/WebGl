@@ -133,7 +133,26 @@ export class Ex extends Component {
     }
 
     drawScene = (gl, programInfo, buffers, texture, deltaTime) => {
-   
+        const rec = [
+            {
+                x: 20, 
+                y: 40, 
+                width: 40, 
+                height: 50,
+                r: 0.4,
+                g: 0.9,
+                b: 0.5
+            },
+            {
+                x: 50, 
+                y: 70, 
+                width: 100, 
+                height: 80,
+                r: 0.3,
+                g: 0.1,
+                b: 0.7
+            },
+        ]
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -167,16 +186,16 @@ export class Ex extends Component {
                 programInfo.attribLocations.position);
         }
 
-        for(let i = 0; i < 50; i++){
-            this.setRectangle(gl, Utility.getRandomInt(500), Utility.getRandomInt(500), Utility.getRandomInt(500), Utility.getRandomInt(500))
-            gl.uniform4f(programInfo.uniformLocations.color, Math.random(), Math.random(), Math.random(), 1);
+        rec.map((el,i) => {
+            this.setRectangle(gl, el.x, el.y, el.width, el.height)
+            gl.uniform4f(programInfo.uniformLocations.color, el.r, el.g, el.b, 1);
             {
                 const vertexCount = 6;
                 const type = gl.TRIANGLES;
                 const offset = 0;
                 gl.drawArrays(type, offset, vertexCount);
             }
-        }
+        })
        
     }
 
@@ -197,7 +216,7 @@ export class Ex extends Component {
            x1, y2,
            x2, y1,
            x2, y2]), gl.STATIC_DRAW);
-      }
+    }
 
     /**
     * Markup
