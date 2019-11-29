@@ -133,25 +133,18 @@ export class Ex extends Component {
     }
 
     drawScene = (gl, programInfo, buffers, texture, deltaTime) => {
-        const rec = [
+        const shape = [
             {
-                x: 20, 
-                y: 40, 
-                width: 40, 
-                height: 50,
+                x1: 300, 
+                x2: 450, 
+                x3: 250, 
+                y1: 120,
+                y2: 200,
+                y3: 200,
                 r: 0.4,
-                g: 0.9,
+                g: 0.5,
                 b: 0.5
-            },
-            {
-                x: 50, 
-                y: 70, 
-                width: 100, 
-                height: 80,
-                r: 0.3,
-                g: 0.1,
-                b: 0.7
-            },
+            }
         ]
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -186,17 +179,31 @@ export class Ex extends Component {
                 programInfo.attribLocations.position);
         }
 
-        rec.map((el,i) => {
-            this.setRectangle(gl, el.x, el.y, el.width, el.height)
+        shape.map((el,i) => {
+            this.setTriangle(gl, el.x1, el.x2, el.x3, el.y1, el.y2, el.y3,)
             gl.uniform4f(programInfo.uniformLocations.color, el.r, el.g, el.b, 1);
             {
-                const vertexCount = 6;
+                const vertexCount = 3;
                 const type = gl.TRIANGLES;
                 const offset = 0;
                 gl.drawArrays(type, offset, vertexCount);
             }
         })
        
+    }
+
+    setTriangle = (gl, x1, x2, x3, y1, y2, y3) => {
+   
+       
+        // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
+        // whatever buffer is bound to the `ARRAY_BUFFER` bind point
+        // but so far we only have one buffer. If we had more than one
+        // buffer we'd want to bind that buffer to `ARRAY_BUFFER` first.
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+           x1, y1,
+           x2, y2,
+           x3, y3,
+        ]), gl.STATIC_DRAW);
     }
 
     setRectangle = (gl, x, y, width, height) => {
