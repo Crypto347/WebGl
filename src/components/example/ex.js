@@ -141,12 +141,12 @@ export class Ex extends Component {
         gl.bufferData(
             gl.ARRAY_BUFFER,
             new Float32Array(
-              [ r1, b1, g1, 1,
-                r1, b1, g1, 1,
-                r1, b1, g1, 1,
-                r2, b2, g2, 1,
-                r2, b2, g2, 1,
-                r2, b2, g2, 1]),
+              [ Math.random(), Math.random(), Math.random(), 1,
+                Math.random(), Math.random(), Math.random(), 1,
+                Math.random(), Math.random(), Math.random(), 1,
+                Math.random(), Math.random(), Math.random(), 1,
+                Math.random(), Math.random(), Math.random(), 1,
+                Math.random(), Math.random(), Math.random(), 1]),
             gl.STATIC_DRAW);
 
         return {
