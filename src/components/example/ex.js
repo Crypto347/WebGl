@@ -57,6 +57,13 @@ import * as Shaders from './Shaders';
 
 import * as WebGlUtility from '../../WebGlUtility';
 
+
+/**
+* Images
+*/
+
+import logo from '../../images/kuQpOb-logo-instagram-images.png';
+
 /**
 * Utility
 */
@@ -96,92 +103,169 @@ export class Ex extends Component {
         const programInfo = {
             program: shaderProgram,
             attribLocations: {
-               position: this.gl.getAttribLocation(shaderProgram, "a_position"),
-               color: this.gl.getAttribLocation(shaderProgram, "a_color")
+                position: this.gl.getAttribLocation(shaderProgram, "a_position"),
+                // color: this.gl.getAttribLocation(shaderProgram, "a_color")
+                texture: this.gl.getAttribLocation(shaderProgram, "a_texCoord")
             },
             uniformLocations: {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
                 color: this.gl.getUniformLocation(shaderProgram, "u_color"),
-                offset: this.gl.getUniformLocation(shaderProgram, "u_offset")
+                offset: this.gl.getUniformLocation(shaderProgram, "u_offset"),
             },
         };
-          
+        const image = new Image();
+        image.src = logo;  // MUST BE SAME DOMAIN!!!
+
         const buffers = this.initBuffers(this.gl);
-        this.drawScene(this.gl, programInfo, buffers);
+       
+        
+        image.onload = () => {
+          this.renderImage(this.gl, programInfo, image);
+        //   this.drawScene(this.gl, programInfo, buffers, image);
+        };
+        // const texture = this.initTexture(this.gl, logo);
+
+        
     }
 
-    
+    renderImage = (gl, programInfo, image) => {
+        const positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        this.setRectangle(gl, 0, 0, image.width, image.height);
 
+        var texcoordBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+                0.0,  0.0,
+                1.0,  0.0,
+                0.0,  1.0,
+                0.0,  1.0,
+                1.0,  0.0,
+                1.0,  1.0,
+            ]), gl.STATIC_DRAW);
+
+        var texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+
+        // webglUtils.resizeCanvasToDisplaySize(gl.canvas);
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        gl.useProgram(programInfo.program);
+
+        gl.enableVertexAttribArray(programInfo.attribLocations.position);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        var size = 2;          // 2 components per iteration
+        var type = gl.FLOAT;   // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.position, size, type, normalize, stride, offset);
+
+        gl.enableVertexAttribArray(programInfo.attribLocations.texture);
+        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+
+        var size = 2;          // 2 components per iteration
+        var type = gl.FLOAT;   // the data is 32bit floats
+        var normalize = false; // don't normalize the data
+        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+        var offset = 0;        // start at the beginning of the buffer
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.texture, size, type, normalize, stride, offset);
+
+        gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
+
+        var primitiveType = gl.TRIANGLES;
+        var offset = 0;
+        var count = 6;
+        gl.drawArrays(primitiveType, offset, count);
+    }
+    
     initBuffers = (gl) => {
         const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-  
-        const positions = [
-            300, 300,
-            550, 300,
-            300, 400,
-            300, 400,
-            550, 300,
-            550, 400,
-        ];
-        
-        gl.bufferData(gl.ARRAY_BUFFER,
-                        new Float32Array(positions),
-                        gl.STATIC_DRAW);
+        // this.setRectangle(gl, 0, 0, image.width, image.height);
+        const x1 = 0;
+        const x2 = 0 + 400;
+        const y1 = 0;
+        const y2 = 0 + 400;
+       
+        // NOTE: gl.bufferData(gl.ARRAY_BUFFER, ...) will affect
+        // whatever buffer is bound to the `ARRAY_BUFFER` bind point
+        // but so far we only have one buffer. If we had more than one
+        // buffer we'd want to bind that buffer to `ARRAY_BUFFER` first.
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+           x1, y1,
+           x2, y1,
+           x1, y2,
+           x1, y2,
+           x2, y1,
+           x2, y2]), gl.STATIC_DRAW);
 
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        let r1 = Math.random();
-        let b1 = Math.random();
-        let g1 = Math.random();
+        // const colorBuffer = gl.createBuffer();
+        // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        // let r1 = Math.random();
+        // let b1 = Math.random();
+        // let g1 = Math.random();
        
-        let r2 = Math.random();
-        let b2 = Math.random();
-        let g2 = Math.random();
+        // let r2 = Math.random();
+        // let b2 = Math.random();
+        // let g2 = Math.random();
        
-        gl.bufferData(
-            gl.ARRAY_BUFFER,
-            new Uint8Array(
-              [ Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
-                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
-                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
-                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
-                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
-                Math.random()* 256, Math.random()* 256, Math.random()* 256, 255]),
-            gl.STATIC_DRAW);
+        // gl.bufferData(
+        //     gl.ARRAY_BUFFER,
+        //     new Uint8Array(
+        //       [ Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+        //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+        //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+        //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+        //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255,
+        //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255]),
+        //     gl.STATIC_DRAW);
+
+        var texCoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            0.0,  0.0,
+            1.0,  0.0,
+            0.0,  1.0,
+            0.0,  1.0,
+            1.0,  0.0,
+            1.0,  1.0,
+        ]), gl.STATIC_DRAW);
+
 
         return {
             position: positionBuffer,
-            color: colorBuffer
+            // color: colorBuffer,
+            texture: texCoordBuffer
         };
     }
 
-    drawScene = (gl, programInfo, buffers, texture, deltaTime) => {
-        // const shape = [
-        //     {
-        //         x: 300, 
-        //         y: 300, 
-        //         width: 250, 
-        //         height: 100
-        //     },
-        //     {
-        //         x: 300, 
-        //         y: 300, 
-        //         width: 250, 
-        //         height: 100
-        //     }
-            // {
-            //     x1: 300, 
-            //     x2: 450, 
-            //     x3: 250, 
-            //     y1: 120,
-            //     y2: 200,
-            //     y3: 200,
-            //     r: 0.6,
-            //     g: 0.4,
-            //     b: 0.7
-            // }
-        // ]
+    drawScene = (gl, programInfo, buffers, image, deltaTime) => {
+
+        var texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+
+
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -195,7 +279,7 @@ export class Ex extends Component {
 
         gl.useProgram(programInfo.program);
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-        gl.uniform4fv(programInfo.uniformLocations.offset, [1, 0, 0, 0]);
+        gl.uniform4fv(programInfo.uniformLocations.offset, [0, 0, 0, 0]);
 
         {
             const numComponents = 2;
@@ -215,23 +299,42 @@ export class Ex extends Component {
                 programInfo.attribLocations.position);
         }
 
+        // {
+        //     const numComponents = 4;
+        //     const type = gl.UNSIGNED_BYTE;
+        //     const normalize = true;
+        //     const stride = 0;
+        //     const offset = 0;
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+        //     gl.vertexAttribPointer(
+        //         programInfo.attribLocations.color,
+        //         numComponents,
+        //         type,
+        //         normalize,
+        //         stride,
+        //         offset);
+        //     gl.enableVertexAttribArray(
+        //         programInfo.attribLocations.color);
+        // }
+
         {
-            const numComponents = 4;
+            const numComponents = 2;
             const type = gl.UNSIGNED_BYTE;
             const normalize = true;
             const stride = 0;
             const offset = 0;
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
             gl.vertexAttribPointer(
-                programInfo.attribLocations.color,
+                programInfo.attribLocations.texture,
                 numComponents,
                 type,
                 normalize,
                 stride,
                 offset);
             gl.enableVertexAttribArray(
-                programInfo.attribLocations.color);
+                programInfo.attribLocations.texture);
         }
+
 
         // shape.map((el,i) => {
             // this.setRectangle(gl, el.x, el.y, el.width, el.height)
