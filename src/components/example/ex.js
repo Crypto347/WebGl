@@ -111,6 +111,7 @@ export class Ex extends Component {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
                 color: this.gl.getUniformLocation(shaderProgram, "u_color"),
                 offset: this.gl.getUniformLocation(shaderProgram, "u_offset"),
+                textureSizeLocation: this.gl.getUniformLocation(shaderProgram, "u_textureSize"),
             },
         };
         const image = new Image();
@@ -214,6 +215,7 @@ export class Ex extends Component {
         gl.useProgram(programInfo.program);
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniform4fv(programInfo.uniformLocations.offset, [0, 0, 0, 0]);
+        gl.uniform2f(programInfo.uniformLocations.textureSizeLocation, image.width, image.height);
             
         {
             const numComponents = 2;
