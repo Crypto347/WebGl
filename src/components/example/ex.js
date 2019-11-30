@@ -120,76 +120,11 @@ export class Ex extends Component {
        
         
         image.onload = () => {
-          this.renderImage(this.gl, programInfo, image);
-        //   this.drawScene(this.gl, programInfo, buffers, image);
+          this.drawScene(this.gl, programInfo, buffers, image);
         };
         // const texture = this.initTexture(this.gl, logo);
 
         
-    }
-
-    renderImage = (gl, programInfo, image) => {
-        const positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        this.setRectangle(gl, 0, 0, image.width, image.height);
-
-        var texcoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-                0.0,  0.0,
-                1.0,  0.0,
-                0.0,  1.0,
-                0.0,  1.0,
-                1.0,  0.0,
-                1.0,  1.0,
-            ]), gl.STATIC_DRAW);
-
-        var texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
-
-        // webglUtils.resizeCanvasToDisplaySize(gl.canvas);
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        gl.useProgram(programInfo.program);
-
-        gl.enableVertexAttribArray(programInfo.attribLocations.position);
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        var size = 2;          // 2 components per iteration
-        var type = gl.FLOAT;   // the data is 32bit floats
-        var normalize = false; // don't normalize the data
-        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        var offset = 0;        // start at the beginning of the buffer
-        gl.vertexAttribPointer(
-            programInfo.attribLocations.position, size, type, normalize, stride, offset);
-
-        gl.enableVertexAttribArray(programInfo.attribLocations.texture);
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-
-        var size = 2;          // 2 components per iteration
-        var type = gl.FLOAT;   // the data is 32bit floats
-        var normalize = false; // don't normalize the data
-        var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
-        var offset = 0;        // start at the beginning of the buffer
-        gl.vertexAttribPointer(
-            programInfo.attribLocations.texture, size, type, normalize, stride, offset);
-
-        gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-
-        var primitiveType = gl.TRIANGLES;
-        var offset = 0;
-        var count = 6;
-        gl.drawArrays(primitiveType, offset, count);
     }
     
     initBuffers = (gl) => {
@@ -234,7 +169,7 @@ export class Ex extends Component {
         //         Math.random()* 256, Math.random()* 256, Math.random()* 256, 255]),
         //     gl.STATIC_DRAW);
 
-        var texCoordBuffer = gl.createBuffer();
+        const texCoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
             0.0,  0.0,
@@ -255,7 +190,7 @@ export class Ex extends Component {
 
     drawScene = (gl, programInfo, buffers, image, deltaTime) => {
 
-        var texture = gl.createTexture();
+        const texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
 
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -264,7 +199,6 @@ export class Ex extends Component {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
@@ -280,7 +214,7 @@ export class Ex extends Component {
         gl.useProgram(programInfo.program);
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniform4fv(programInfo.uniformLocations.offset, [0, 0, 0, 0]);
-
+            
         {
             const numComponents = 2;
             const type = gl.FLOAT;
@@ -319,8 +253,8 @@ export class Ex extends Component {
 
         {
             const numComponents = 2;
-            const type = gl.UNSIGNED_BYTE;
-            const normalize = true;
+            const type = gl.FLOAT;
+            const normalize = false;
             const stride = 0;
             const offset = 0;
             gl.bindBuffer(gl.ARRAY_BUFFER, buffers.texture);
@@ -334,7 +268,6 @@ export class Ex extends Component {
             gl.enableVertexAttribArray(
                 programInfo.attribLocations.texture);
         }
-
 
         // shape.map((el,i) => {
             // this.setRectangle(gl, el.x, el.y, el.width, el.height)
