@@ -1,5 +1,7 @@
-input {
+.input-wrapper {
     position: absolute;
+    display: flex;
+    flex-direction: column;
     top: 20px;
     right: 20px;
 }

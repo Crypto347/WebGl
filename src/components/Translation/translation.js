@@ -80,7 +80,8 @@ export class Translation extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            range: 0
+            rangeX: 0,
+            rangeY: 0
         };
     }
 
@@ -127,17 +128,19 @@ export class Translation extends Component {
     }
     
     initBuffers = (gl) => {
-        let x = +this.state.range;
+        let x = +this.state.rangeX;
+        let y = +this.state.rangeY;
+
         const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
        
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            x, 0,
-            x + 50 , 0,
-            x, 40,
-            x, 40,
-            x+50, 40,
-            x+50, 0]), gl.STATIC_DRAW);
+            x, y,
+            x + 50 , y,
+            x, y+40,
+            x, y+40,
+            x+50, y+40,
+            x+50, y]), gl.STATIC_DRAW);
 
         const colorBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -217,9 +220,16 @@ export class Translation extends Component {
        
     }
 
-    handleOnChange = (e) => {
+    handleOnChangeX = (e) => {
         this.setState({
-            range: +e.target.value
+            rangeX: +e.target.value
+        })
+        this.updateCanvas()
+    }
+
+    handleOnChangeY = (e) => {
+        this.setState({
+            rangeY: +e.target.value
         })
         this.updateCanvas()
     }
@@ -232,7 +242,10 @@ export class Translation extends Component {
         return(
             <div className="threeDSphere-input">
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
-                <input type="range" value={this.state.range} min="0" max="500" onChange={() => this.handleOnChange(event)}/>
+                <div className="input-wrapper">
+                    <input type="range" value={this.state.rangeX} min="0" max="500" onChange={() => this.handleOnChangeX(event)}/>
+                    <input type="range" value={this.state.rangeY} min="0" max="500" onChange={() => this.handleOnChangeY(event)}/>
+                </div>
             </div> 
         );
     }
