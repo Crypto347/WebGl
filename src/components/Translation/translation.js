@@ -341,11 +341,11 @@ export class Translation extends Component {
             <div className="threeDSphere-input">
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
-                    <div>X coordinate</div>
+                    <div>X coordinate({this.state.rangeX})</div>
                     <input type="range" value={this.state.rangeX} min="0" max="500" onChange={() => this.handleOnChangeX(event)}/>
-                    <div>Y coordinate</div>
+                    <div>Y coordinate ({this.state.rangeY})</div>
                     <input type="range" value={this.state.rangeY} min="0" max="500" onChange={() => this.handleOnChangeY(event)}/>
-                    <div>Rotation</div>
+                    <div>Angle({this.state.deg})</div>
                     <input type="range" value={this.state.deg} min="0" max="360" onChange={() => this.handleRotationOnChange(event)}/>
                 </div>
                 {console.log(this.state.rotation)}
