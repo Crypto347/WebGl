@@ -81,7 +81,9 @@ export class Translation extends Component {
         super(props);
         this.state = {
             rangeX: 0,
-            rangeY: 0
+            rangeY: 0,
+            deg: 0,
+            rotation: [0,1],
         };
     }
 
@@ -117,6 +119,7 @@ export class Translation extends Component {
             uniformLocations: {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
                 translation: this.gl.getUniformLocation(shaderProgram, "u_translation"),
+                rotation: this.gl.getUniformLocation(shaderProgram, "u_rotation"),
             },
         };
 
@@ -187,7 +190,6 @@ export class Translation extends Component {
     }
 
     drawScene = (gl, programInfo, buffers) => {
-       
         /**
         * Clear the canvas before we start drawing on it.
         */  
@@ -203,7 +205,8 @@ export class Translation extends Component {
 
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniform2f(programInfo.uniformLocations.translation, this.state.rangeX, this.state.rangeY);
-            
+        gl.uniform2fv(programInfo.uniformLocations.rotation, this.state.rotation);
+
         {
             const numComponents = 2;
             const type = gl.FLOAT;
@@ -263,6 +266,72 @@ export class Translation extends Component {
         this.updateCanvas()
     }
 
+    handleRotationOnChange = (e) => {
+        let updateRotation = [this.state.rotation];
+        let deg = +e.target.value;
+        let x = Math.cos(deg*Math.PI/180);
+        let y = Math.sin(deg*Math.PI/180);
+    
+        updateRotation.splice(0, 1, x);
+        updateRotation.splice(1, 1, y);
+
+        this.setState({
+            deg: deg,
+            rotation: updateRotation
+        })
+        this.updateCanvas()
+    }
+
+    // handleRotationOnChangeY = (e) => {
+    //     let y = +e.target.value;
+    //     this.setState({
+    //         rotationY: y
+    //     })
+    //     this.updateRotation(this.state.rotationX, y);
+       
+    // }
+
+    // updateRotation = (x,y) => {
+    //     let updateRotation = [this.state.rotation];
+    //     let xRot;
+    //     let yRot;
+    //     if(x>0 && y>0){
+    //         xRot = x;
+    //         yRot = Math.sqrt(1-x*x);
+    //     }
+    //     if(x>0 && y<0){
+    //         xRot = x;
+    //         yRot = -Math.sqrt(1-x*x);
+    //     }
+    //     if(x<0 && y<0){
+    //         xRot = - x;
+    //         yRot = -Math.sqrt(1-x*x);
+    //     }
+    //     if(x<0 && y>0){
+    //         xRot = - x;
+    //         yRot = Math.sqrt(1-x*x);
+    //     }
+    //     updateRotation.splice(0, 1, xRot);
+    //     updateRotation.splice(1, 1, yRot);
+    //     this.setState({
+    //         rotation: updateRotation
+    //     })
+    //     this.updateCanvas()
+    // }
+    // handleRotationOnChangeY = (e) => {
+    //     console.log(e.target.value)
+    //     let updateRotation = [this.state.rotation];
+    //     let y = +e.target.value;
+    //     let x = Math.sqrt(1-x*x);
+    //     updateRotation.splice(0, 1, x);
+    //     updateRotation.splice(1, 1, y);
+
+    //     this.setState({
+    //         rotation: updateRotation
+    //     })
+    //     this.updateCanvas()
+    // }
+
     /**
     * Markup
     */
@@ -272,9 +341,14 @@ export class Translation extends Component {
             <div className="threeDSphere-input">
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
+                    <div>X coordinate</div>
                     <input type="range" value={this.state.rangeX} min="0" max="500" onChange={() => this.handleOnChangeX(event)}/>
+                    <div>Y coordinate</div>
                     <input type="range" value={this.state.rangeY} min="0" max="500" onChange={() => this.handleOnChangeY(event)}/>
+                    <div>Rotation</div>
+                    <input type="range" value={this.state.deg} min="0" max="360" onChange={() => this.handleRotationOnChange(event)}/>
                 </div>
+                {console.log(this.state.rotation)}
             </div> 
         );
     }
