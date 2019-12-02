@@ -83,7 +83,8 @@ export class Translation extends Component {
             rangeX: 0,
             rangeY: 0,
             deg: 0,
-            rotation: [0,1],
+            rotation: [0, 1],
+            scale: [1, 1]
         };
     }
 
@@ -120,6 +121,7 @@ export class Translation extends Component {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
                 translation: this.gl.getUniformLocation(shaderProgram, "u_translation"),
                 rotation: this.gl.getUniformLocation(shaderProgram, "u_rotation"),
+                scale: this.gl.getUniformLocation(shaderProgram, "u_scale"),
             },
         };
 
@@ -206,6 +208,7 @@ export class Translation extends Component {
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniform2f(programInfo.uniformLocations.translation, this.state.rangeX, this.state.rangeY);
         gl.uniform2fv(programInfo.uniformLocations.rotation, this.state.rotation);
+        gl.uniform2fv(programInfo.uniformLocations.scale, this.state.scale);
 
         {
             const numComponents = 2;
@@ -282,55 +285,25 @@ export class Translation extends Component {
         this.updateCanvas()
     }
 
-    // handleRotationOnChangeY = (e) => {
-    //     let y = +e.target.value;
-    //     this.setState({
-    //         rotationY: y
-    //     })
-    //     this.updateRotation(this.state.rotationX, y);
-       
-    // }
+    handleOnChangeScaleX = (e) => {
+        let updatedScale = [...this.state.scale];
+        let x = +e.target.value;
+        updatedScale.splice(0, 1 , x)
+        this.setState({
+            scale: updatedScale
+        })
+        this.updateCanvas()
+    }
 
-    // updateRotation = (x,y) => {
-    //     let updateRotation = [this.state.rotation];
-    //     let xRot;
-    //     let yRot;
-    //     if(x>0 && y>0){
-    //         xRot = x;
-    //         yRot = Math.sqrt(1-x*x);
-    //     }
-    //     if(x>0 && y<0){
-    //         xRot = x;
-    //         yRot = -Math.sqrt(1-x*x);
-    //     }
-    //     if(x<0 && y<0){
-    //         xRot = - x;
-    //         yRot = -Math.sqrt(1-x*x);
-    //     }
-    //     if(x<0 && y>0){
-    //         xRot = - x;
-    //         yRot = Math.sqrt(1-x*x);
-    //     }
-    //     updateRotation.splice(0, 1, xRot);
-    //     updateRotation.splice(1, 1, yRot);
-    //     this.setState({
-    //         rotation: updateRotation
-    //     })
-    //     this.updateCanvas()
-    // }
-    // handleRotationOnChangeY = (e) => {
-    //     console.log(e.target.value)
-    //     let updateRotation = [this.state.rotation];
-    //     let y = +e.target.value;
-    //     let x = Math.sqrt(1-x*x);
-    //     updateRotation.splice(0, 1, x);
-    //     updateRotation.splice(1, 1, y);
-
-    //     this.setState({
-    //         rotation: updateRotation
-    //     })
-    //     this.updateCanvas()
-    // }
+    handleOnChangeScaleY = (e) => {
+        let updatedScale = [...this.state.scale];
+        let y = +e.target.value;
+        updatedScale.splice(1, 1 , y)
+        this.setState({
+            scale: updatedScale
+        })
+        this.updateCanvas()
+    }
 
     /**
     * Markup
@@ -347,6 +320,10 @@ export class Translation extends Component {
                     <input type="range" value={this.state.rangeY} min="0" max="500" onChange={() => this.handleOnChangeY(event)}/>
                     <div>Angle({this.state.deg})</div>
                     <input type="range" value={this.state.deg} min="0" max="360" onChange={() => this.handleRotationOnChange(event)}/>
+                    <div>ScaleX ({this.state.scale[0]})</div>
+                    <input type="range" value={this.state.scale[0]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleX(event)}/>
+                    <div>ScaleY({this.state.scale[1]})</div>
+                    <input type="range" value={this.state.scale[1]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleY(event)}/>
                 </div>
                 {console.log(this.state.rotation)}
             </div> 
