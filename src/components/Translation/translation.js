@@ -116,6 +116,7 @@ export class Translation extends Component {
             },
             uniformLocations: {
                 resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
+                translation: this.gl.getUniformLocation(shaderProgram, "u_translation"),
             },
         };
 
@@ -128,24 +129,50 @@ export class Translation extends Component {
     }
     
     initBuffers = (gl) => {
-        let x = +this.state.rangeX;
-        let y = +this.state.rangeY;
-
         const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
        
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            x, y,
-            x + 50 , y,
-            x, y+40,
-            x, y+40,
-            x+50, y+40,
-            x+50, y]), gl.STATIC_DRAW);
+            0,0,
+            0,80,
+            20,0,
+            20,0,
+            20,80,
+            0,80,
+
+            20,30,
+            40,30,
+            20,50,
+            20,50,
+            40,50,
+            40,30,
+            
+            40,0,
+            60,0,
+            40,80,
+            40,80,
+            60,80,
+            60,0
+        ]), gl.STATIC_DRAW);
 
         const colorBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+            0.8,0,1,0.6,
+            0.6,0.8,0.2,1,
+            0.6,0.6,1,0.6,
+            0.2,0,1,1,
+            0.8,0,0.2,1,
+            0.6,0.8,0.6,1,
+        
+            0.8,0,1,0.6,
+            0.6,0.8,0.2,1,
+            0.6,0.6,1,0.6,
+            0.2,0,1,1,
+            0.8,0,0.2,1,
+            0.6,0.8,0.6,1,
+        
             0.8,0,1,0.6,
             0.6,0.8,0.2,1,
             0.6,0.6,1,0.6,
@@ -173,7 +200,9 @@ export class Translation extends Component {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.useProgram(programInfo.program);
+
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
+        gl.uniform2f(programInfo.uniformLocations.translation, this.state.rangeX, this.state.rangeY);
             
         {
             const numComponents = 2;
@@ -212,7 +241,7 @@ export class Translation extends Component {
         }
 
         {
-            const vertexCount = 6;
+            const vertexCount = 18;
             const type = gl.TRIANGLES;
             const offset = 0;
             gl.drawArrays(type, offset, vertexCount);
