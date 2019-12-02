@@ -207,8 +207,12 @@ export class TranslationMatrix extends Component {
         let rotationMatrix = this.rotationMatrix(this.state.deg);
         let scaleMatrix = this.scalingMatrix(this.state.scale[0], this.state.scale[1]);
 
-        let matrix = this.multiplyMatrices(translationMatrix, rotationMatrix);
-        matrix = this.multiplyMatrices(matrix, scaleMatrix);
+        // let matrix = this.multiplyMatrices(translationMatrix, rotationMatrix);
+        // matrix = this.multiplyMatrices(matrix, scaleMatrix);
+        
+        //changing order
+        let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
+            matrix = this.multiplyMatrices(matrix, translationMatrix);
 
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
