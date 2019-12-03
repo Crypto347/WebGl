@@ -135,52 +135,52 @@ export class TranslationMatrix extends Component {
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
        
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            0,0,
-            0,80,
-            20,0,
-            20,0,
-            20,80,
-            0,80,
+            0, 0,
+            0, 80,
+            20, 0,
+            20, 0,
+            20, 80,
+            0, 80,
 
-            20,30,
-            40,30,
-            20,50,
-            20,50,
-            40,50,
-            40,30,
+            20, 30,
+            40, 30,
+            20, 50,
+            20, 50,
+            40, 50,
+            40, 30,
             
-            40,0,
-            60,0,
-            40,80,
-            40,80,
-            60,80,
-            60,0
+            40, 0,
+            60, 0,
+            40, 80,
+            40, 80,
+            60, 80,
+            60, 0
         ]), gl.STATIC_DRAW);
 
         const colorBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            0.8,0,1,0.6,
-            0.6,0.8,0.2,1,
-            0.6,0.6,1,0.6,
-            0.2,0,1,1,
-            0.8,0,0.2,1,
-            0.6,0.8,0.6,1,
+            0.8, 0, 1,  0.6,
+            0.6, 0.8, 0.2, 1,
+            0.6, 0.6, 1, 0.6,
+            0.2, 0, 1, 1,
+            0.8, 0, 0.2, 1,
+            0.6, 0.8, 0.6, 1,
         
-            0.8,0,1,0.6,
-            0.6,0.8,0.2,1,
-            0.6,0.6,1,0.6,
-            0.2,0,1,1,
-            0.8,0,0.2,1,
-            0.6,0.8,0.6,1,
+            0.8, 0,1, 0.6,
+            0.6, 0.8, 0.2, 1,
+            0.6, 0.6, 1, 0.6,
+            0.2, 0, 1, 1,
+            0.8, 0, 0.2, 1,
+            0.6, 0.8, 0.6, 1,
         
-            0.8,0,1,0.6,
-            0.6,0.8,0.2,1,
-            0.6,0.6,1,0.6,
-            0.2,0,1,1,
-            0.8,0,0.2,1,
-            0.6,0.8,0.6,1]), gl.STATIC_DRAW);
+            0.8, 0, 1, 0.6,
+            0.6, 0.8, 0.2, 1,
+            0.6, 0.6, 1, 0.6,
+            0.2, 0, 1, 1,
+            0.8, 0, 0.2, 1,
+            0.6, 0.8, 0.6, 1]), gl.STATIC_DRAW);
   
         return {
             position: positionBuffer,
@@ -324,18 +324,19 @@ export class TranslationMatrix extends Component {
     }
 
     projectionMatrix = (width, height) => {
+        // Note: This matrix flips the Y axis so 0 is at the top.
         return [
             2/width, 0, 0,
             0, -2/height, 0,
-            -1,1,1
+            -1, 1, 1
         ]
     }
 
     identity = () => {
         return [
-            1,0,0,
-            0,1,0,
-            0,0,1]
+            1, 0, 0,
+            0, 1, 0,
+            0, 0, 1]
     }
 
     translationMatrix = (tx, ty) => {
