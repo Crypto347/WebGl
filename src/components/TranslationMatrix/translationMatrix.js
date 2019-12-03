@@ -80,11 +80,11 @@ export class TranslationMatrix extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rangeX: 0,
-            rangeY: 0,
+            rangeX: 60,
+            rangeY: 40,
             deg: 0,
             rotation: [0, 1],
-            scale: [1, 1]
+            scale: [0.85, 0.85]
         };
     }
 
@@ -190,6 +190,7 @@ export class TranslationMatrix extends Component {
     }
 
     drawScene = (gl, programInfo, buffers) => {
+        
         /**
         * Clear the canvas before we start drawing on it.
         */  
@@ -211,11 +212,13 @@ export class TranslationMatrix extends Component {
         // matrix = this.multiplyMatrices(matrix, scaleMatrix);
         
         //changing order
-        let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
-            matrix = this.multiplyMatrices(matrix, translationMatrix);
+        // let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
+        //     matrix = this.multiplyMatrices(matrix, translationMatrix);
+
+        let matrix = this.identity();
 
         gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-        gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
+        // gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
 
         {
             const numComponents = 2;
@@ -253,12 +256,25 @@ export class TranslationMatrix extends Component {
                 programInfo.attribLocations.color);
         }
 
-        {
-            const vertexCount = 18;
-            const type = gl.TRIANGLES;
-            const offset = 0;
-            gl.drawArrays(type, offset, vertexCount);
+        for (let i = 0; i < 5; ++i) {
+            // Multiply the matrices.
+            matrix = this.multiplyMatrices(matrix, translationMatrix);
+            matrix = this.multiplyMatrices(matrix, rotationMatrix);
+            matrix = this.multiplyMatrices(matrix, scaleMatrix);
+         
+            // Set the matrix.
+            gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
+         
+            // Draw the geometry.
+            gl.drawArrays(gl.TRIANGLES, 0, 18);
         }
+
+        // {
+        //     const vertexCount = 18;
+        //     const type = gl.TRIANGLES;
+        //     const offset = 0;
+        //     gl.drawArrays(type, offset, vertexCount);
+        // }
        
     }
 
@@ -292,6 +308,13 @@ export class TranslationMatrix extends Component {
             secondMatrix20 * firstMatrix01 + secondMatrix21 * firstMatrix11 + secondMatrix22 * firstMatrix21,
             secondMatrix20 * firstMatrix02 + secondMatrix21 * firstMatrix12 + secondMatrix22 * firstMatrix22,
         ];
+    }
+
+    identity = () => {
+        return [
+            1,0,0,
+            0,1,0,
+            0,0,1]
     }
 
     translationMatrix = (tx, ty) => {
