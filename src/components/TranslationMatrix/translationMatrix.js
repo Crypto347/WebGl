@@ -208,6 +208,8 @@ export class TranslationMatrix extends Component {
         let rotationMatrix = this.rotationMatrix(this.state.deg);
         let scaleMatrix = this.scalingMatrix(this.state.scale[0], this.state.scale[1]);
 
+        let moveOriginMatrix = this.translationMatrix(-30, -40);
+
         // let matrix = this.multiplyMatrices(translationMatrix, rotationMatrix);
         // matrix = this.multiplyMatrices(matrix, scaleMatrix);
         
@@ -261,6 +263,7 @@ export class TranslationMatrix extends Component {
             matrix = this.multiplyMatrices(matrix, translationMatrix);
             matrix = this.multiplyMatrices(matrix, rotationMatrix);
             matrix = this.multiplyMatrices(matrix, scaleMatrix);
+            matrix = this.multiplyMatrices(matrix, moveOriginMatrix)
          
             // Set the matrix.
             gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
