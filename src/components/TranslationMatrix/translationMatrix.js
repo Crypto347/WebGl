@@ -118,7 +118,6 @@ export class TranslationMatrix extends Component {
                
             },
             uniformLocations: {
-                resolution: this.gl.getUniformLocation(shaderProgram, "u_resolution"),
                 matrix: this.gl.getUniformLocation(shaderProgram, "u_matrix"),
             },
         };
@@ -204,6 +203,8 @@ export class TranslationMatrix extends Component {
 
         gl.useProgram(programInfo.program);
 
+        let projectionMatrix = this.projectionMatrix(gl.canvas.clientWidth, gl.canvas.clientHeight);
+
         let translationMatrix = this.translationMatrix(this.state.rangeX, this.state.rangeY);
         let rotationMatrix = this.rotationMatrix(this.state.deg);
         let scaleMatrix = this.scalingMatrix(this.state.scale[0], this.state.scale[1]);
@@ -218,8 +219,9 @@ export class TranslationMatrix extends Component {
         //     matrix = this.multiplyMatrices(matrix, translationMatrix);
 
         let matrix = this.identity();
+        matrix = this.multiplyMatrices(matrix, projectionMatrix);
 
-        gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
+        // gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         // gl.uniformMatrix3fv(programInfo.uniformLocations.matrix, false, matrix);
 
         {
@@ -311,6 +313,14 @@ export class TranslationMatrix extends Component {
             secondMatrix20 * firstMatrix01 + secondMatrix21 * firstMatrix11 + secondMatrix22 * firstMatrix21,
             secondMatrix20 * firstMatrix02 + secondMatrix21 * firstMatrix12 + secondMatrix22 * firstMatrix22,
         ];
+    }
+
+    projectionMatrix = (width, height) => {
+        return [
+            2/width, 0, 0,
+            0, -2/height, 0,
+            -1,1,1
+        ]
     }
 
     identity = () => {
