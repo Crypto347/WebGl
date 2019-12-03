@@ -205,10 +205,6 @@ export class TranslationMatrix extends Component {
 
         let projectionMatrix = this.projectionMatrix(gl.canvas.clientWidth, gl.canvas.clientHeight);
 
-        let translationMatrix = this.translationMatrix(this.state.rangeX, this.state.rangeY);
-        let rotationMatrix = this.rotationMatrix(this.state.deg);
-        let scaleMatrix = this.scalingMatrix(this.state.scale[0], this.state.scale[1]);
-
         let moveOriginMatrix = this.translationMatrix(-30, -40);
 
         // let matrix = this.multiplyMatrices(translationMatrix, rotationMatrix);
@@ -262,9 +258,9 @@ export class TranslationMatrix extends Component {
 
         for (let i = 0; i < 5; ++i) {
             // Multiply the matrices.
-            matrix = this.multiplyMatrices(matrix, translationMatrix);
-            matrix = this.multiplyMatrices(matrix, rotationMatrix);
-            matrix = this.multiplyMatrices(matrix, scaleMatrix);
+            matrix = this.translate(matrix, this.state.rangeX, this.state.rangeY);
+            matrix = this.rotate(matrix, this.state.deg);
+            matrix = this.scale(matrix, this.state.scale[0], this.state.scale[1]);
             matrix = this.multiplyMatrices(matrix, moveOriginMatrix)
          
             // Set the matrix.
@@ -313,6 +309,18 @@ export class TranslationMatrix extends Component {
             secondMatrix20 * firstMatrix01 + secondMatrix21 * firstMatrix11 + secondMatrix22 * firstMatrix21,
             secondMatrix20 * firstMatrix02 + secondMatrix21 * firstMatrix12 + secondMatrix22 * firstMatrix22,
         ];
+    }
+
+    translate = (m, tx, ty) => {
+        return this.multiplyMatrices(m, this.translationMatrix(tx, ty));
+    }
+
+    rotate = (m, deg) => {
+        return this.multiplyMatrices(m, this.rotationMatrix(deg));
+    }
+
+    scale = (m, sx, sy) => {
+        return this.multiplyMatrices(m, this.scalingMatrix(sx, sy));
     }
 
     projectionMatrix = (width, height) => {
