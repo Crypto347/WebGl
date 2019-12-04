@@ -19,6 +19,7 @@ import Ex from './components/example/ex';
 import Translation from './components/Translation/translation';
 import TranslationMatrix from './components/TranslationMatrix/translationMatrix';
 import Orthographic3D from './components/Orthographic3D/orthographic3D';
+import Perspective from './components/Perspective/perspective';
 
 /**
 * Styles
@@ -43,7 +44,7 @@ export class App extends Component {
                 <Route 
                   exact 
                   path="/"
-                  component={ Orthographic3D }
+                  component={ Perspective }
                />
             </div>
       );
