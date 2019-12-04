@@ -80,13 +80,14 @@ export class Perspective extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rangeX: 45,
-            rangeY: 150,
-            rangeZ: 0,
+            rangeX: 177,
+            rangeY: 177,
+            rangeZ: -390,
             deg: [0, 0, 0],
             rotation: [40, 25, 325],
             scale: [1, 1, 1],
-            fudgeFactor: 0
+            fudgeFactor: 0,
+            fieldOfView: 92
         };
     }
 
@@ -471,9 +472,12 @@ export class Perspective extends Component {
         //changing order
         // let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
         //     matrix = this.multiplyMatrices(matrix, translationMatrix);
+        let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
+        let zNear = 1;
+        let zFar = 2000;
 
-        let matrix = this.makeZToWMatrix(this.state.fudgeFactor);
-        matrix = this.multiplyMatrices(matrix, this.orthographic(0, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, 400, -400));
+        let matrix = this.perspective(this.state.fieldOfView, aspect, zNear, zFar);
+        // matrix = this.multiplyMatrices(matrix, this.orthographic(0, aspect, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, 400, -400));
         matrix = this.translate(matrix, this.state.rangeX, this.state.rangeY, this.state.rangeZ);
         matrix = this.rotateX(matrix, this.state.deg[0]);
         matrix = this.rotateY(matrix, this.state.deg[1]);
@@ -614,6 +618,19 @@ export class Perspective extends Component {
 
     scale = (m, sx, sy, sz) => {
         return this.multiplyMatrices(m, this.scalingMatrix(sx, sy, sz));
+    }
+
+    perspective = (fieldOfViewInDegree, aspect, near, far) => {
+        let fieldOfViewInRadians = fieldOfViewInDegree * Math.PI / 180;
+        let f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewInRadians);
+        let rangeInv = 1.0 / (near - far);
+     
+        return [
+          f / aspect, 0, 0, 0,
+          0, f, 0, 0,
+          0, 0, (near + far) * rangeInv, -1,
+          0, 0, near * far * rangeInv * 2, 0
+        ];
     }
 
     makeZToWMatrix = (fudgeFactor) => {
@@ -821,6 +838,18 @@ export class Perspective extends Component {
     }
 
     /**
+    * field of view
+    */ 
+
+    handleOnChangeFieldOfView = (e) => {
+        let updatedFieldOfView = +e.target.value;
+        this.setState({
+            fieldOfView: updatedFieldOfView
+        });
+        this.updateCanvas();
+    }
+    
+    /**
     * Markup
     */
 
@@ -830,11 +859,11 @@ export class Perspective extends Component {
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
                     <div>X coordinate({this.state.rangeX})</div>
-                    <input type="range" value={this.state.rangeX} min="0" max="1424" onChange={() => this.handleOnChangeX(event)}/>
+                    <input type="range" value={this.state.rangeX} min="-200" max="200" onChange={() => this.handleOnChangeX(event)}/>
                     <div>Y coordinate ({this.state.rangeY})</div>
-                    <input type="range" value={this.state.rangeY} min="0" max="642" onChange={() => this.handleOnChangeY(event)}/>
+                    <input type="range" value={this.state.rangeY} min="-200" max="200" onChange={() => this.handleOnChangeY(event)}/>
                     <div>Z coordinate ({this.state.rangeZ})</div>
-                    <input type="range" value={this.state.rangeZ} min="-200" max="400" onChange={() => this.handleOnChangeZ(event)}/>
+                    <input type="range" value={this.state.rangeZ} min="-1000" max="1" onChange={() => this.handleOnChangeZ(event)}/>
                     <div>AngleX({this.state.deg[0]})</div>
                     <input type="range" value={this.state.deg[0]} min="0" max="360" onChange={() => this.handleRotationOnChangeX(event)}/>
                     <div>AngleY({this.state.deg[1]})</div>
@@ -847,8 +876,10 @@ export class Perspective extends Component {
                     <input type="range" value={this.state.scale[1]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleY(event)}/>
                     <div>ScaleZ({this.state.scale[2]})</div>
                     <input type="range" value={this.state.scale[2]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleZ(event)}/>
-                    <div>fudgeFactor({this.state.fudgeFactor})</div>
-                    <input type="range" value={this.state.sfudgeFactor} min="0" max="2" step="0.001" onChange={() => this.handleOnChangeFudgeFactor(event)}/>
+                    {/* <div>fudgeFactor({this.state.fudgeFactor})</div>
+                    <input type="range" value={this.state.sfudgeFactor} min="0" max="2" step="0.001" onChange={() => this.handleOnChangeFudgeFactor(event)}/> */}
+                    <div>fieldOfView({this.state.fieldOfView})</div>
+                    <input type="range" value={this.state.fieldOfView} min="0" max="179" step="1" onChange={() => this.handleOnChangeFieldOfView(event)}/>
                 </div>
             </div> 
         );
