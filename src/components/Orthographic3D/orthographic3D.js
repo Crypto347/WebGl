@@ -278,28 +278,29 @@ export class Orthographic3D extends Component {
             //right
 
             30, 0, 0,
+            30, 40, 20,
             30, 0, 20,
-            30, 40, 20,
 
             30, 40, 20,
-            30, 40, 0,
             30, 0, 0,
+            30, 40, 0,
 
             30, 60, 0,
+            30, 100, 20,
             30, 60, 20,
-            30, 100, 20,
 
             30, 100, 20,
-            30, 100, 0,
             30, 60, 0,
+            30, 100, 0,
 
             80, 0, 0,
+            80, 100, 20,
             80, 0, 20,
-            80, 100, 20,
+          
 
             80, 100, 20,
-            80, 100, 0,
             80, 0, 0,
+            80, 100, 0,
 
 
         ]), gl.STATIC_DRAW);
@@ -450,10 +451,10 @@ export class Orthographic3D extends Component {
        
         gl.clearColor(0.0, 0.0, 0.0, 0.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
-        // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-        // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-        gl.enable(gl.CULL_FACE);
+        gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        // gl.enable(gl.CULL_FACE);
+        gl.enable(gl.DEPTH_TEST);           // Enable depth testing
 
         gl.useProgram(programInfo.program);
 
@@ -468,7 +469,7 @@ export class Orthographic3D extends Component {
         // let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
         //     matrix = this.multiplyMatrices(matrix, translationMatrix);
 
-        let matrix = this.projectionMatrix(gl.canvas.clientWidth, gl.canvas.clientHeight, 400);
+        let matrix = this.orthographic(0, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, 400, -400);
         matrix = this.translate(matrix, this.state.rangeX, this.state.rangeY, this.state.rangeZ);
         matrix = this.rotateX(matrix, this.state.deg[0]);
         matrix = this.rotateY(matrix, this.state.deg[1]);
@@ -610,15 +611,28 @@ export class Orthographic3D extends Component {
         return this.multiplyMatrices(m, this.scalingMatrix(sx, sy, sz));
     }
 
-    projectionMatrix = (width, height, depth) => {
-        // Note: This matrix flips the Y axis so 0 is at the top.
-        return [
-            2 / width, 0, 0, 0,
-            0, -2 / height, 0, 0,
-            0, 0, 2 / depth, 0,
-           -1, 1, 0, 1,
+    orthographic = (left, right, bottom, top, near, far) => {
+        return[
+            2/(right - left), 0, 0, 0,
+            0, 2/(top - bottom), 0, 0,
+            0, 0, 2/(near - far), 0,
+
+            (left + right) / (left - right),
+            (bottom + top) / (bottom - top),
+            (near + far) / (near - far),
+            1
         ]
     }
+
+    // projectionMatrix = (width, height, depth) => {
+    //     // Note: This matrix flips the Y axis so 0 is at the top.
+    //     return [
+    //         2 / width, 0, 0, 0,
+    //         0, -2 / height, 0, 0,
+    //         0, 0, 2 / depth, 0,
+    //        -1, 1, 0, 1,
+    //     ]
+    // }
 
     identity = () => {
         return [
