@@ -14,7 +14,7 @@ export const vert = `
       // Adjust the z to divide by
       float zToDivideBy = 1.0 + position.z * u_fudgeFactor;
 
-      gl_Position = vec4(position.xy / zToDivideBy, position.zw);
+      gl_Position = vec4(position.xyz, zToDivideBy);
       v_color = a_color;
    }
 `;
