@@ -834,7 +834,7 @@ export class Perspective extends Component {
                     <div>Y coordinate ({this.state.rangeY})</div>
                     <input type="range" value={this.state.rangeY} min="0" max="642" onChange={() => this.handleOnChangeY(event)}/>
                     <div>Z coordinate ({this.state.rangeZ})</div>
-                    <input type="range" value={this.state.rangeZ} min="0" max="400" onChange={() => this.handleOnChangeZ(event)}/>
+                    <input type="range" value={this.state.rangeZ} min="-200" max="400" onChange={() => this.handleOnChangeZ(event)}/>
                     <div>AngleX({this.state.deg[0]})</div>
                     <input type="range" value={this.state.deg[0]} min="0" max="360" onChange={() => this.handleRotationOnChangeX(event)}/>
                     <div>AngleY({this.state.deg[1]})</div>
