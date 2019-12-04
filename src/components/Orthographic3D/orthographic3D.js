@@ -143,16 +143,16 @@ export class Orthographic3D extends Component {
             0, 0, 0,
 
             0, 0, 0,
-            30, 0, 0,
             30, 0, 20,
+            30, 0, 0,
 
             30, 40, 20,
-            30, 40, 0,
             50, 40, 20,
+            30, 40, 0,
 
             50, 40, 20,
-            30, 40, 0,
             50, 40, 0,
+            30, 40, 0,
 
             50, 0, 20,
             80, 0, 20,
@@ -165,24 +165,27 @@ export class Orthographic3D extends Component {
             //down
 
             0, 100, 20,
-            30, 100, 20,
             0, 100, 0,
+            30, 100, 20,
 
             0, 100, 0,
-            30, 100, 20,
             30, 100, 0,
+            30, 100, 20,
 
             30, 60, 20,
-            50, 60, 20,
             30, 60, 0,
+            50, 60, 20,
+         
 
             30, 60, 0,
-            50, 60, 20,
             50, 60, 0,
+            50, 60, 20,
+          
 
             50, 100, 0,
-            50, 100, 20,
             80, 100, 20,
+            50, 100, 20,
+           
 
             80, 100, 20,
             50, 100, 0,
@@ -191,34 +194,39 @@ export class Orthographic3D extends Component {
             //front
 
             0, 0, 0,
-            30, 0, 0,
+            30, 0, 0, 
             0, 100, 0,
 
-            0, 100, 0,
-            30, 100, 0,
             30, 0, 0,
+            30, 100, 0,
+            0, 100, 0,
 
             30, 40, 0,
             50, 40, 0,
             30, 60, 0,
+            
 
             30, 60, 0,
-            50, 60, 0,
             50, 40, 0,
+            50, 60, 0,
+            
 
             50, 0, 0,
             80, 0, 0,
             50, 100, 0,
+          
+            
 
             50, 100, 0,
-            80, 100, 0,
             80, 0, 0,
+            80, 100, 0,
+            
 
             //back
 
             0, 0, 20,
-            30, 0, 20,
             0, 100, 20,
+            30, 0, 20,
 
             0, 100, 20,
             30, 100, 20,
@@ -233,8 +241,8 @@ export class Orthographic3D extends Component {
             50, 60, 20,
 
             50, 0, 20,
-            80, 0, 20,
             50, 100, 20,
+            80, 0, 20,
 
             50, 100, 20,
             80, 100, 20,
@@ -247,8 +255,9 @@ export class Orthographic3D extends Component {
             0, 100, 20,
 
             0, 100, 20,
-            0, 0, 0,
             0, 100, 0,
+            0, 0, 0,
+           
 
             50, 0, 20,
             50, 40, 20,
@@ -441,9 +450,9 @@ export class Orthographic3D extends Component {
        
         gl.clearColor(0.0, 0.0, 0.0, 0.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
-        gl.enable(gl.DEPTH_TEST);           // Enable depth testing
-        gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
-      
+        // gl.enable(gl.DEPTH_TEST);           // Enable depth testing
+        // gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
+        gl.enable(gl.CULL_FACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         gl.useProgram(programInfo.program);
@@ -764,7 +773,7 @@ export class Orthographic3D extends Component {
     handleOnChangeScaleZ = (e) => {
         let updatedScale = [...this.state.scale];
         let z = +e.target.value;
-        updatedScale.splice(2, 1 , x)
+        updatedScale.splice(2, 1 , z)
         this.setState({
             scale: updatedScale
         })
@@ -781,9 +790,9 @@ export class Orthographic3D extends Component {
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
                     <div>X coordinate({this.state.rangeX})</div>
-                    <input type="range" value={this.state.rangeX} min="0" max="500" onChange={() => this.handleOnChangeX(event)}/>
+                    <input type="range" value={this.state.rangeX} min="0" max="1424" onChange={() => this.handleOnChangeX(event)}/>
                     <div>Y coordinate ({this.state.rangeY})</div>
-                    <input type="range" value={this.state.rangeY} min="0" max="500" onChange={() => this.handleOnChangeY(event)}/>
+                    <input type="range" value={this.state.rangeY} min="0" max="642" onChange={() => this.handleOnChangeY(event)}/>
                     <div>Z coordinate ({this.state.rangeZ})</div>
                     <input type="range" value={this.state.rangeZ} min="0" max="400" onChange={() => this.handleOnChangeZ(event)}/>
                     <div>AngleX({this.state.deg[0]})</div>
