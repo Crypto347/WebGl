@@ -121,7 +121,7 @@ export class Perspective extends Component {
             },
             uniformLocations: {
                 matrix: this.gl.getUniformLocation(shaderProgram, "u_matrix"),
-                fudgeFactor: this.gl.getUniformLocation(shaderProgram, "u_fudgeFactor"),
+                // fudgeFactor: this.gl.getUniformLocation(shaderProgram, "u_fudgeFactor"),
                 
             },
         };
@@ -472,7 +472,8 @@ export class Perspective extends Component {
         // let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
         //     matrix = this.multiplyMatrices(matrix, translationMatrix);
 
-        let matrix = this.orthographic(0, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, 400, -400);
+        let matrix = this.makeZToWMatrix(this.state.fudgeFactor);
+        matrix = this.multiplyMatrices(matrix, this.orthographic(0, gl.canvas.clientWidth, gl.canvas.clientHeight, 0, 400, -400));
         matrix = this.translate(matrix, this.state.rangeX, this.state.rangeY, this.state.rangeZ);
         matrix = this.rotateX(matrix, this.state.deg[0]);
         matrix = this.rotateY(matrix, this.state.deg[1]);
@@ -481,7 +482,7 @@ export class Perspective extends Component {
 
         // gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
         gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, matrix);
-        gl.uniform1f(programInfo.uniformLocations.fudgeFactor, this.state.fudgeFactor);
+        // gl.uniform1f(programInfo.uniformLocations.fudgeFactor, this.state.fudgeFactor);
 
         {
             const numComponents = 3;
@@ -614,6 +615,15 @@ export class Perspective extends Component {
     scale = (m, sx, sy, sz) => {
         return this.multiplyMatrices(m, this.scalingMatrix(sx, sy, sz));
     }
+
+    makeZToWMatrix = (fudgeFactor) => {
+        return [
+          1, 0, 0, 0,
+          0, 1, 0, 0,
+          0, 0, 1, fudgeFactor,
+          0, 0, 0, 1,
+        ];
+      }
 
     orthographic = (left, right, bottom, top, near, far) => {
         return[
