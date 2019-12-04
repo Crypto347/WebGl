@@ -859,9 +859,9 @@ export class Perspective extends Component {
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
                     <div>X coordinate({this.state.rangeX})</div>
-                    <input type="range" value={this.state.rangeX} min="-200" max="200" onChange={() => this.handleOnChangeX(event)}/>
+                    <input type="range" value={this.state.rangeX} min="-750" max="500" onChange={() => this.handleOnChangeX(event)}/>
                     <div>Y coordinate ({this.state.rangeY})</div>
-                    <input type="range" value={this.state.rangeY} min="-200" max="200" onChange={() => this.handleOnChangeY(event)}/>
+                    <input type="range" value={this.state.rangeY} min="-378" max="277" onChange={() => this.handleOnChangeY(event)}/>
                     <div>Z coordinate ({this.state.rangeZ})</div>
                     <input type="range" value={this.state.rangeZ} min="-1000" max="1" onChange={() => this.handleOnChangeZ(event)}/>
                     <div>AngleX({this.state.deg[0]})</div>
