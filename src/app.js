@@ -20,6 +20,7 @@ import Translation from './components/Translation/translation';
 import TranslationMatrix from './components/TranslationMatrix/translationMatrix';
 import Orthographic3D from './components/Orthographic3D/orthographic3D';
 import Perspective from './components/Perspective/perspective';
+import Camera from './components/Camera/camera';
 
 /**
 * Styles
@@ -44,7 +45,7 @@ export class App extends Component {
                 <Route 
                   exact 
                   path="/"
-                  component={ Perspective }
+                  component={ Camera }
                />
             </div>
       );
