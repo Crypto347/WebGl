@@ -87,9 +87,9 @@ export class Camera extends Component {
             rotation: [40, 25, 325],
             scale: [1, 1, 1],
             fudgeFactor: 0,
-            fieldOfView: 92,
+            fieldOfView: 100,
             cameraAngle: 0,
-            cameraRadius: 200,
+            cameraRadius: 400,
             numberOfH: 5
         };
     }
@@ -487,7 +487,7 @@ export class Camera extends Component {
         // matrix = this.scale(matrix, this.state.scale[0], this.state.scale[1], this.state.scale[2]);
 
         let cameraMatrix = this.rotationMatrixY(this.state.cameraAngle);
-        cameraMatrix = this.translate(cameraMatrix, 0, 0, this.state.cameraRadius);
+        cameraMatrix = this.translate(cameraMatrix, 0, 0, this.state.cameraRadius * 1.5);
 
         let viewMatrix = this.inverse(cameraMatrix);
 
