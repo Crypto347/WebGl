@@ -489,7 +489,7 @@ export class Camera extends Component {
         let cameraMatrix = this.rotationMatrixY(this.state.cameraAngle);
         cameraMatrix = this.translate(cameraMatrix, 0, 0, this.state.cameraRadius * 1.5);
 
-        let viewMatrix = this.inverse(cameraMatrix);
+        let viewMatrix = this.inverseMatrix(cameraMatrix);
 
         let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);
 
@@ -555,6 +555,24 @@ export class Camera extends Component {
         //     gl.drawArrays(type, offset, vertexCount);
         // }
        
+    }
+
+    lookAt = (cameraPosition, target, up) => {
+        var zAxis = this.normalizeVector(
+            this.subtractVectors(cameraPosition, target)
+        );
+        var xAxis = this.normalizeVector(this.crossProductOfVectors(up, zAxis));
+        var yAxis = this.normalizeVector(this.crossProductOfVectors(zAxis, xAxis));
+     
+        return [
+           xAxis[0], xAxis[1], xAxis[2], 0,
+           yAxis[0], yAxis[1], yAxis[2], 0,
+           zAxis[0], zAxis[1], zAxis[2], 0,
+           cameraPosition[0],
+           cameraPosition[1],
+           cameraPosition[2],
+           1,
+        ];
     }
 
     multiplyMatrices = (firstMatrix, secondMatrix) => {
@@ -675,14 +693,14 @@ export class Camera extends Component {
         ]
     }
 
-    identity = () => {
+    identityMatrix = () => {
         return [
             1, 0, 0,
             0, 1, 0,
             0, 0, 1]
     }
 
-    inverse = (m) => {
+    inverseMatrix = (m) => {
         let m00 = m[0 * 4 + 0];
         let m01 = m[0 * 4 + 1];
         let m02 = m[0 * 4 + 2];
@@ -766,6 +784,30 @@ export class Camera extends Component {
                 (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02))
         ];
     }
+
+    crossProductOfVectors = (a, b) => {
+        return [
+            a[1] * b[2] - a[2] * b[1],
+            a[2] * b[0] - a[0] * b[2],
+            a[0] * b[1] - a[1] * b[0]
+        ];
+    }
+
+    subtractVectors = (a, b) => {
+        return [
+            a[0] - b[0], a[1] - b[1], a[2] - b[2]
+        ];
+    }
+
+    normalizeVector = (v) => {
+        var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        // make sure we don't divide by 0.
+        if (length > 0.00001) {
+          return [v[0] / length, v[1] / length, v[2] / length];
+        } else {
+          return [0, 0, 0];
+        }
+      }
 
     translationMatrix = (tx, ty, tz) => {
         return [
