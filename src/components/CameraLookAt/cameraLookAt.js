@@ -1021,7 +1021,7 @@ export class CameraLookAt extends Component {
             <div className="threeDSphere-input">
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
-                    <div>X coordinate({this.state.rangeX})</div>
+                    {/* <div>X coordinate({this.state.rangeX})</div>
                     <input type="range" value={this.state.rangeX} min="-750" max="500" onChange={() => this.handleOnChangeX(event)}/>
                     <div>Y coordinate ({this.state.rangeY})</div>
                     <input type="range" value={this.state.rangeY} min="-378" max="277" onChange={() => this.handleOnChangeY(event)}/>
@@ -1038,7 +1038,7 @@ export class CameraLookAt extends Component {
                     <div>ScaleY({this.state.scale[1]})</div>
                     <input type="range" value={this.state.scale[1]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleY(event)}/>
                     <div>ScaleZ({this.state.scale[2]})</div>
-                    <input type="range" value={this.state.scale[2]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleZ(event)}/>
+                    <input type="range" value={this.state.scale[2]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleZ(event)}/> */}
                     {/* <div>fudgeFactor({this.state.fudgeFactor})</div>
                     <input type="range" value={this.state.sfudgeFactor} min="0" max="2" step="0.001" onChange={() => this.handleOnChangeFudgeFactor(event)}/> */}
                     <div>fieldOfView({this.state.fieldOfView})</div>
