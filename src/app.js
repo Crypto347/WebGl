@@ -22,6 +22,7 @@ import Orthographic3D from './components/Orthographic3D/orthographic3D';
 import Perspective from './components/Perspective/perspective';
 import Camera from './components/Camera/camera';
 import CameraLookAt from './components/CameraLookAt/cameraLookAt';
+import DirectionalLighting from './components/DirectionalLighting/directionalLighting';
 
 /**
 * Styles
@@ -46,7 +47,7 @@ export class App extends Component {
                 <Route 
                   exact 
                   path="/"
-                  component={ CameraLookAt }
+                  component={ DirectionalLighting }
                />
             </div>
       );
