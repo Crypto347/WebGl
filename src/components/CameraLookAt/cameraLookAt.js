@@ -486,8 +486,8 @@ export class CameraLookAt extends Component {
         // matrix = this.rotateZ(matrix, this.state.deg[2]);
         // matrix = this.scale(matrix, this.state.scale[0], this.state.scale[1], this.state.scale[2]);
 
-        // Compute the position of the first F
-        let fPosition = [this.state.cameraRadius, 0, 0];
+        // Compute the position of the first H
+        let hPosition = [this.state.cameraRadius, 0, 0];
 
         let cameraMatrix = this.rotationMatrixY(this.state.cameraAngle);
         cameraMatrix = this.translate(cameraMatrix, 0, 0, this.state.cameraRadius * 1.5);
@@ -500,7 +500,7 @@ export class CameraLookAt extends Component {
         ];
         let up = [0, 1, 0];
 
-        cameraMatrix = this.lookAt(cameraPosition, fPosition, up);
+        cameraMatrix = this.lookAt(cameraPosition, hPosition, up);
         let viewMatrix = this.inverseMatrix(cameraMatrix);
 
         let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);

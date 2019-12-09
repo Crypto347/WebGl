@@ -120,12 +120,15 @@ export class DirectionalLighting extends Component {
             program: shaderProgram,
             attribLocations: {
                 position: this.gl.getAttribLocation(shaderProgram, "a_position"),
-                color: this.gl.getAttribLocation(shaderProgram, "a_color")
+                // color: this.gl.getAttribLocation(shaderProgram, "a_color"),
+                normal: this.gl.getAttribLocation(shaderProgram, "a_normal"),
                
             },
             uniformLocations: {
                 matrix: this.gl.getUniformLocation(shaderProgram, "u_matrix"),
                 // fudgeFactor: this.gl.getUniformLocation(shaderProgram, "u_fudgeFactor"),
+                color: this.gl.getUniformLocation(shaderProgram, "u_color"),
+                reverseLightDirection: this.gl.getUniformLocation(shaderProgram, "u_reverseLightDirection"),
                 
             },
         };
@@ -312,141 +315,287 @@ export class DirectionalLighting extends Component {
 
         ]), gl.STATIC_DRAW);
 
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        // const colorBuffer = gl.createBuffer();
+        // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        
+        // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+        //     1,   0,  0,
+            
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+        //     0,   1,  0,
+
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+        //     0,   0,  1,
+
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+        //     1,   1,  0,
+
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+        //     1,   0,  1,
+
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        //     0,   1,  1,
+        
+        // ]), gl.STATIC_DRAW);
+
+        const normalsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, normalsBuffer);
         
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-        
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-        
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
-            1,   0,  0,
+        //up
+
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+            0, 1, 0,
+
+        //down
+
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+            0, -1, 0,
+
+        //front
+
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
             
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-        
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-        
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
-            0,   1,  0,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
+            0, 0, 1,
 
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-        
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-        
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
-            0,   0,  1,
+        //back
 
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-        
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-        
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
-            1,   1,  0,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
 
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-        
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-        
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
-            1,   0,  1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
 
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-        
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-        
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
-            0,   1,  1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+            0, 0, -1,
+
+        //left
+
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            
+
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+            -1, 0, 0,
+
+        //right
+
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
+            1, 0, 0,
         
         ]), gl.STATIC_DRAW);
   
         return {
             position: positionBuffer,
-            color: colorBuffer,
+            // color: colorBuffer,
+            normal: normalsBuffer
         };
     }
 
@@ -475,39 +624,40 @@ export class DirectionalLighting extends Component {
         //changing order
         // let matrix = this.multiplyMatrices(scaleMatrix, rotationMatrix);
         //     matrix = this.multiplyMatrices(matrix, translationMatrix);
+
+        // Compute the projection matrix
         let aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
         let zNear = 1;
         let zFar = 2000;
 
-        let matrix = this.perspective(this.state.fieldOfView, aspect, zNear, zFar);
-        matrix = this.translate(matrix, this.state.rangeX, this.state.rangeY, this.state.rangeZ);
-        matrix = this.rotateX(matrix, this.state.deg[0]);
-        matrix = this.rotateY(matrix, this.state.deg[1]);
-        matrix = this.rotateZ(matrix, this.state.deg[2]);
-        matrix = this.scale(matrix, this.state.scale[0], this.state.scale[1], this.state.scale[2]);
+        let projectionMatrix = this.perspective(this.state.fieldOfView, aspect, zNear, zFar);
+        
+        // Compute the camera's matrix
+        let camera = [100, 150, 200];
+        let target = [0, 35, 0];
+        let up = [0, 1, 0];
+        let cameraMatrix = this.lookAt(camera, target, up);
 
-        // Compute the position of the first F
-        // let fPosition = [this.state.cameraRadius, 0, 0];
+        // Make a view matrix from the camera matrix.
+        var viewMatrix = this.inverseMatrix(cameraMatrix);
 
-        // let cameraMatrix = this.rotationMatrixY(this.state.cameraAngle);
-        // cameraMatrix = this.translate(cameraMatrix, 0, 0, this.state.cameraRadius * 1.5);
+        // Compute a view projection matrix
+        let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);
 
-        // Get the camera's position from the matrix we computed
-        // let cameraPosition = [
-        //     cameraMatrix[12],
-        //     cameraMatrix[13],
-        //     cameraMatrix[14],
-        // ];
-        // let up = [0, 1, 0];
+        // Draw a F at the origin
+        var worldMatrix = this.rotationMatrixY(this.state.cameraAngle);
 
-        // cameraMatrix = this.lookAt(cameraPosition, fPosition, up);
-        // let viewMatrix = this.inverseMatrix(cameraMatrix);
+        // Multiply the matrices.
+        var worldViewProjectionMatrix = this.multiplyMatrices(viewProjectionMatrix, worldMatrix);
 
-        // let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);
-
-        // gl.uniform2f(programInfo.uniformLocations.resolution, gl.canvas.width, gl.canvas.height);
-        gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, matrix);
-        // gl.uniform1f(programInfo.uniformLocations.fudgeFactor, this.state.fudgeFactor);
+        // Set the matrix.
+        gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, worldViewProjectionMatrix);
+        
+        // Set the color to use
+        gl.uniform4fv(programInfo.uniformLocations.color, [0.2, 1, 0.2, 1]); // green
+        
+        // set the light direction.
+        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
 
         {
             const numComponents = 3;
@@ -527,22 +677,40 @@ export class DirectionalLighting extends Component {
                 programInfo.attribLocations.position);
         }
 
+        // {
+        //     const numComponents = 3;
+        //     const type = gl.FLOAT;
+        //     const normalize = false;
+        //     const stride = 0;
+        //     const offset = 0;
+        //     gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+        //     gl.vertexAttribPointer(
+        //         programInfo.attribLocations.color,
+        //         numComponents,
+        //         type,
+        //         normalize,
+        //         stride,
+        //         offset);
+        //     gl.enableVertexAttribArray(
+        //         programInfo.attribLocations.color);
+        // }
+
         {
             const numComponents = 3;
             const type = gl.FLOAT;
             const normalize = false;
             const stride = 0;
             const offset = 0;
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.color);
+            gl.bindBuffer(gl.ARRAY_BUFFER, buffers.normal);
             gl.vertexAttribPointer(
-                programInfo.attribLocations.color,
+                programInfo.attribLocations.normal,
                 numComponents,
                 type,
                 normalize,
                 stride,
                 offset);
             gl.enableVertexAttribArray(
-                programInfo.attribLocations.color);
+                programInfo.attribLocations.normal);
         }
 
         // for (let i = 0; i < this.state.numberOfH; ++i) {
@@ -1021,7 +1189,7 @@ export class DirectionalLighting extends Component {
             <div className="threeDSphere-input">
                 <canvas width={window.innerWidth - 35} height={window.innerHeight} style={{border: "2px solid pink"}} ref="canvas" ></canvas>
                 <div className="input-wrapper">
-                    <div>X coordinate({this.state.rangeX})</div>
+                    {/* <div>X coordinate({this.state.rangeX})</div>
                     <input type="range" value={this.state.rangeX} min="-750" max="500" onChange={() => this.handleOnChangeX(event)}/>
                     <div>Y coordinate ({this.state.rangeY})</div>
                     <input type="range" value={this.state.rangeY} min="-378" max="277" onChange={() => this.handleOnChangeY(event)}/>
@@ -1032,7 +1200,7 @@ export class DirectionalLighting extends Component {
                     <div>AngleY({this.state.deg[1]})</div>
                     <input type="range" value={this.state.deg[1]} min="0" max="360" onChange={() => this.handleRotationOnChangeY(event)}/>
                     <div>AngleZ({this.state.deg[2]})</div>
-                    <input type="range" value={this.state.deg[2]} min="0" max="360" onChange={() => this.handleRotationOnChangeZ(event)}/>
+                    <input type="range" value={this.state.deg[2]} min="0" max="360" onChange={() => this.handleRotationOnChangeZ(event)}/> */}
                     {/* <div>ScaleX ({this.state.scale[0]})</div>
                     <input type="range" value={this.state.scale[0]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleX(event)}/>
                     <div>ScaleY({this.state.scale[1]})</div>
@@ -1041,10 +1209,10 @@ export class DirectionalLighting extends Component {
                     <input type="range" value={this.state.scale[2]} min="-5" max="5" step="0.01" onChange={() => this.handleOnChangeScaleZ(event)}/> */}
                     {/* <div>fudgeFactor({this.state.fudgeFactor})</div>
                     <input type="range" value={this.state.sfudgeFactor} min="0" max="2" step="0.001" onChange={() => this.handleOnChangeFudgeFactor(event)}/> */}
-                    <div>fieldOfView({this.state.fieldOfView})</div>
-                    <input type="range" value={this.state.fieldOfView} min="0" max="179" step="1" onChange={() => this.handleOnChangeFieldOfView(event)}/>
-                    {/* <div>cameraAngle({this.state.cameraAngle})</div>
-                    <input type="range" value={this.state.cameraAngle} min="-360" max="360" step="1" onChange={() => this.handleOnChangeCameraAngle(event)}/> */}
+                    {/* <div>fieldOfView({this.state.fieldOfView})</div>
+                    <input type="range" value={this.state.fieldOfView} min="0" max="179" step="1" onChange={() => this.handleOnChangeFieldOfView(event)}/> */}
+                    <div>cameraAngle({this.state.cameraAngle})</div>
+                    <input type="range" value={this.state.cameraAngle} min="-360" max="360" step="1" onChange={() => this.handleOnChangeCameraAngle(event)}/>
                 </div>
             </div> 
         );
