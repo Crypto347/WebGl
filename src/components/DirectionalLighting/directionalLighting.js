@@ -125,10 +125,12 @@ export class DirectionalLighting extends Component {
                
             },
             uniformLocations: {
-                matrix: this.gl.getUniformLocation(shaderProgram, "u_matrix"),
+                // matrix: this.gl.getUniformLocation(shaderProgram, "u_matrix"),
                 // fudgeFactor: this.gl.getUniformLocation(shaderProgram, "u_fudgeFactor"),
                 color: this.gl.getUniformLocation(shaderProgram, "u_color"),
                 reverseLightDirection: this.gl.getUniformLocation(shaderProgram, "u_reverseLightDirection"),
+                worldViewProjection: this.gl.getUniformLocation(shaderProgram, "u_worldViewProjection"),
+                world: this.gl.getUniformLocation(shaderProgram, "u_world"),
                 
             },
         };
@@ -144,8 +146,8 @@ export class DirectionalLighting extends Component {
     initBuffers = (gl) => {
         const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-       
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+
+        let positions = new Float32Array([
             //up
 
             0, 0, 20,
@@ -310,10 +312,27 @@ export class DirectionalLighting extends Component {
 
             80, 100, 20,
             80, 0, 0,
-            80, 100, 0,
+            80, 100, 0
+        ])
 
+            // Center the F around the origin and Flip it around. We do this because
+            // we're in 3D now with and +Y is up where as before when we started with 2D
+            // we had +Y as down.
 
-        ]), gl.STATIC_DRAW);
+            // We could do by changing all the values above but I'm lazy.
+            // We could also do it with a matrix at draw time but you should
+            // never do stuff at draw time if you can do it at init time.
+            // let matrix = this.rotationMatrixX(180);
+            // matrix = this.translate(matrix, -50, -75, -15);
+
+            // for (let ii = 0; ii < positions.length; ii += 3) {
+            //     let vector = this.transformPoint(matrix, [positions[ii + 0], positions[ii + 1], positions[ii + 2], 1]);
+            //     positions[ii + 0] = vector[0];
+            //     positions[ii + 1] = vector[1];
+            //     positions[ii + 2] = vector[2];
+            // }
+       
+        gl.bufferData(gl.ARRAY_BUFFER, positions,  gl.STATIC_DRAW);
 
         // const colorBuffer = gl.createBuffer();
         // gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
@@ -651,13 +670,15 @@ export class DirectionalLighting extends Component {
         var worldViewProjectionMatrix = this.multiplyMatrices(viewProjectionMatrix, worldMatrix);
 
         // Set the matrix.
-        gl.uniformMatrix4fv(programInfo.uniformLocations.matrix, false, worldViewProjectionMatrix);
+        gl.uniformMatrix4fv(programInfo.uniformLocations.worldViewProjection, false, worldViewProjectionMatrix);
+
+        gl.uniformMatrix4fv(programInfo.uniformLocations.world, false, worldMatrix);
         
         // Set the color to use
         gl.uniform4fv(programInfo.uniformLocations.color, [0.2, 1, 0.2, 1]); // green
         
         // set the light direction.
-        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
+        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([-1, -1, -1]));
 
         {
             const numComponents = 3;
