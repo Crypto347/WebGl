@@ -130,7 +130,7 @@ export class DirectionalLighting extends Component {
                 color: this.gl.getUniformLocation(shaderProgram, "u_color"),
                 reverseLightDirection: this.gl.getUniformLocation(shaderProgram, "u_reverseLightDirection"),
                 worldViewProjection: this.gl.getUniformLocation(shaderProgram, "u_worldViewProjection"),
-                world: this.gl.getUniformLocation(shaderProgram, "u_world"),
+                u_worldInverseTranspose: this.gl.getUniformLocation(shaderProgram, "u_worldInverseTranspose"),
                 
             },
         };
@@ -658,7 +658,7 @@ export class DirectionalLighting extends Component {
         let cameraMatrix = this.lookAt(camera, target, up);
 
         // Make a view matrix from the camera matrix.
-        var viewMatrix = this.inverseMatrix(cameraMatrix);
+        let viewMatrix = this.inverseMatrix(cameraMatrix);
 
         // flip H around. We do this because
         // we're in 3D now with and +Y is up where as before when we started with 2D
@@ -672,10 +672,12 @@ export class DirectionalLighting extends Component {
         let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);
 
         // Draw a F at the origin
-        var worldMatrix = this.rotationMatrixY(this.state.cameraAngle);
+        let worldMatrix = this.rotationMatrixY(this.state.cameraAngle);
 
         // Multiply the matrices.
-        var worldViewProjectionMatrix = this.multiplyMatrices(viewProjectionMatrix, worldMatrix);
+        let worldViewProjectionMatrix = this.multiplyMatrices(viewProjectionMatrix, worldMatrix);
+        let worldInverseMatrix = this.inverseMatrix(worldMatrix);
+        let worldInverseTransposeMatrix = this.transposeMatrix(worldInverseMatrix);
 
         // Set the matrix.
         gl.uniformMatrix4fv(programInfo.uniformLocations.worldViewProjection, false, worldViewProjectionMatrix);
@@ -781,11 +783,11 @@ export class DirectionalLighting extends Component {
     }
 
     lookAt = (cameraPosition, target, up) => {
-        var zAxis = this.normalizeVector(
+        let zAxis = this.normalizeVector(
             this.subtractVectors(cameraPosition, target)
         );
-        var xAxis = this.normalizeVector(this.crossProductOfVectors(up, zAxis));
-        var yAxis = this.normalizeVector(this.crossProductOfVectors(zAxis, xAxis));
+        let xAxis = this.normalizeVector(this.crossProductOfVectors(up, zAxis));
+        let yAxis = this.normalizeVector(this.crossProductOfVectors(zAxis, xAxis));
      
         return [
            xAxis[0], xAxis[1], xAxis[2], 0,
@@ -923,6 +925,15 @@ export class DirectionalLighting extends Component {
             0, 0, 1]
     }
 
+    transposeMatrix = (m) => {
+        return [
+            m[0], m[4], m[8], m[12],
+            m[1], m[5], m[9], m[13],
+            m[2], m[6], m[10], m[14],
+            m[3], m[7], m[11], m[15],
+        ];
+    }
+
     inverseMatrix = (m) => {
         let m00 = m[0 * 4 + 0];
         let m01 = m[0 * 4 + 1];
@@ -1023,7 +1034,7 @@ export class DirectionalLighting extends Component {
     }
 
     normalizeVector = (v) => {
-        var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+        let length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
         // make sure we don't divide by 0.
         if (length > 0.00001) {
           return [v[0] / length, v[1] / length, v[2] / length];

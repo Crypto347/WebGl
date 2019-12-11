@@ -3,7 +3,7 @@ export const vert = `
    attribute vec3 a_normal;
 
    uniform mat4 u_worldViewProjection;
-   uniform mat4 u_world;
+   uniform mat4 u_worldInverseTranspose;
 
    varying vec3 v_normal;
 
@@ -12,7 +12,8 @@ export const vert = `
       gl_Position = u_worldViewProjection * a_position;
 
       // orient the normals and pass to the fragment shader
-      v_normal = mat3(u_world) * a_normal;
+      v_normal = mat3(u_worldInverseTranspose) * a_normal;
+      // v_normal = (u_worldInverseTranspose * vec4(a_normal, 0)).xyz;
    }
 `;
 
