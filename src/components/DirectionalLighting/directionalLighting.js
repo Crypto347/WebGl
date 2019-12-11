@@ -660,6 +660,13 @@ export class DirectionalLighting extends Component {
         // Make a view matrix from the camera matrix.
         var viewMatrix = this.inverseMatrix(cameraMatrix);
 
+        // flip H around. We do this because
+        // we're in 3D now with and +Y is up where as before when we started with 2D
+        // we had +Y as down.
+        let matrix = this.rotationMatrixX(180);
+        viewMatrix = this.multiplyMatrices(viewMatrix, matrix);
+     
+
         // Compute a view projection matrix
         let viewProjectionMatrix = this.multiplyMatrices(projectionMatrix, viewMatrix);
 
@@ -678,7 +685,7 @@ export class DirectionalLighting extends Component {
         gl.uniform4fv(programInfo.uniformLocations.color, [0.2, 1, 0.2, 1]); // green
         
         // set the light direction.
-        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([-1, -1, -1]));
+        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
 
         {
             const numComponents = 3;
@@ -756,6 +763,20 @@ export class DirectionalLighting extends Component {
             gl.drawArrays(type, offset, vertexCount);
         }
        
+    }
+
+    transformPoint = (m, v, dst) => {
+        dst = dst || new Float32Array(3);
+        let v0 = v[0];
+        let v1 = v[1];
+        let v2 = v[2];
+
+        let d = v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 3] + v2 * m[2 * 4 + 3] + m[3 * 4 + 3];
+
+        dst[0] = (v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0] + m[3 * 4 + 0])/d;
+        dst[1] = (v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1] + m[3 * 4 + 1])/d;
+        dst[2] = (v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2] + m[3 * 4 + 2])/d;
+        return dst;
     }
 
     lookAt = (cameraPosition, target, up) => {
