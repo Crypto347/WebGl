@@ -664,6 +664,7 @@ export class DirectionalLighting extends Component {
         // we're in 3D now with and +Y is up where as before when we started with 2D
         // we had +Y as down.
         let matrix = this.rotationMatrixX(180);
+        matrix = this.translate(matrix, -50, -75, -15);
         viewMatrix = this.multiplyMatrices(viewMatrix, matrix);
      
 
