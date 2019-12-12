@@ -31,7 +31,7 @@ import {
 * Styles
 */
 
-import './directionalLighting.scss';
+import './pointLight.scss';
 
 /**
 * Selectors
@@ -72,10 +72,10 @@ import * as Utility from '../../utility';
 
 
 /**
-* DirectionalLighting component definition and export
+* PointLight component definition and export
 */
 
-export class DirectionalLighting extends Component {
+export class PointLight extends Component {
 
     constructor(props) {
         super(props);
@@ -131,7 +131,8 @@ export class DirectionalLighting extends Component {
                 reverseLightDirection: this.gl.getUniformLocation(shaderProgram, "u_reverseLightDirection"),
                 worldViewProjection: this.gl.getUniformLocation(shaderProgram, "u_worldViewProjection"),
                 worldInverseTranspose: this.gl.getUniformLocation(shaderProgram, "u_worldInverseTranspose"),
-                
+                lightWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_lightWorldPosition"),
+                world: this.gl.getUniformLocation(shaderProgram, "u_world"),
             },
         };
 
@@ -689,7 +690,9 @@ export class DirectionalLighting extends Component {
         gl.uniform4fv(programInfo.uniformLocations.color, [0.2, 1, 0.2, 1]); // green
         
         // set the light direction.
-        gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
+        // gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
+        gl.uniform3fv(programInfo.uniformLocations.lightWorldPosition, [20, 30, 50]);
+
 
         {
             const numComponents = 3;
@@ -1285,5 +1288,5 @@ export default connect(
             // moveCircleXCoordinate: bindActionCreators(Actions.moveCircleXCoordinate, dispatch),
         };
     }
-)(DirectionalLighting);
+)(PointLight);
  
