@@ -90,7 +90,8 @@ export class PointLight extends Component {
             fieldOfView: 100,
             cameraAngle: 0,
             cameraRadius: 400,
-            numberOfH: 5
+            numberOfH: 5,
+            shininess: 1
         };
     }
 
@@ -133,7 +134,8 @@ export class PointLight extends Component {
                 worldInverseTranspose: this.gl.getUniformLocation(shaderProgram, "u_worldInverseTranspose"),
                 lightWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_lightWorldPosition"),
                 world: this.gl.getUniformLocation(shaderProgram, "u_world"),
-                viewWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_viewWorldPosition")
+                viewWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_viewWorldPosition"),
+                shininess: this.gl.getUniformLocation(shaderProgram, "u_shininess"),
             },
         };
 
@@ -697,6 +699,8 @@ export class PointLight extends Component {
         // set the camera/view position
         gl.uniform3fv(programInfo.uniformLocations.viewWorldPosition, camera);
 
+        gl.uniform1f(programInfo.uniformLocations.shininess, this.state.shininess);
+
         {
             const numComponents = 3;
             const type = gl.FLOAT;
@@ -1239,7 +1243,17 @@ export class PointLight extends Component {
         this.updateCanvas();
     }
 
-    
+    /**
+    * Shininess
+    */ 
+
+   handleOnChangeShininess = (e) => {
+        let updatedShininess = +e.target.value;
+        this.setState({
+            shininess: updatedShininess
+        });
+        this.updateCanvas();
+    }
     
     /**
     * Markup
@@ -1274,6 +1288,8 @@ export class PointLight extends Component {
                     <input type="range" value={this.state.fieldOfView} min="0" max="179" step="1" onChange={() => this.handleOnChangeFieldOfView(event)}/> */}
                     <div>cameraAngle({this.state.cameraAngle})</div>
                     <input type="range" value={this.state.cameraAngle} min="-360" max="360" step="1" onChange={() => this.handleOnChangeCameraAngle(event)}/>
+                    <div>shininess({this.state.shininess})</div>
+                    <input type="range" value={this.state.shininess} min="1" max="300" step="1" onChange={() => this.handleOnChangeShininess(event)}/>
                 </div>
             </div> 
         );

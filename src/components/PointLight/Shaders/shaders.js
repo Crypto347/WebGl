@@ -9,8 +9,8 @@ export const vert = `
    uniform mat4 u_worldViewProjection;
    uniform mat4 u_worldInverseTranspose;
 
-   varying vec3 v_normal;
 
+   varying vec3 v_normal;
    varying vec3 v_surfaceToLight;
    varying vec3 v_surfaceToView;
 
@@ -43,6 +43,7 @@ export const frag = `
    varying vec3 v_surfaceToView;
 
    uniform vec4 u_color;
+   uniform float u_shininess;
 
    void main() {
 
@@ -57,7 +58,11 @@ export const frag = `
       vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
       float light = dot(v_normal, surfaceToLightDirection);
-      float specular = dot(normal, halfVector);
+      float specular = 0.0;
+
+      if(light > 0.0){
+         specular = pow(dot(normal, halfVector), u_shininess);
+      }
 
       gl_FragColor = u_color;
 
