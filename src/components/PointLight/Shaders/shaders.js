@@ -44,6 +44,8 @@ export const frag = `
 
    uniform vec4 u_color;
    uniform float u_shininess;
+   uniform vec3 u_lightColor;
+   uniform vec3 u_specularColor;
 
    void main() {
 
@@ -68,9 +70,9 @@ export const frag = `
 
       // Lets multiply just the color portion (not the alpha)
       // by the light
-      gl_FragColor.rgb *= light;
+      gl_FragColor.rgb *= light * u_lightColor;
 
       // Just add in the specular
-      gl_FragColor.rgb += specular;
+      gl_FragColor.rgb += specular * u_specularColor;
    }
 `;

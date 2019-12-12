@@ -136,6 +136,8 @@ export class PointLight extends Component {
                 world: this.gl.getUniformLocation(shaderProgram, "u_world"),
                 viewWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_viewWorldPosition"),
                 shininess: this.gl.getUniformLocation(shaderProgram, "u_shininess"),
+                lightColor: this.gl.getUniformLocation(shaderProgram, "u_lightColor"),
+                specularColor: this.gl.getUniformLocation(shaderProgram, "u_specularColor"),
             },
         };
 
@@ -700,6 +702,11 @@ export class PointLight extends Component {
         gl.uniform3fv(programInfo.uniformLocations.viewWorldPosition, camera);
 
         gl.uniform1f(programInfo.uniformLocations.shininess, this.state.shininess);
+
+        // set the light color
+        gl.uniform3fv(programInfo.uniformLocations.lightColor, this.normalizeVector([1, 0.6, 0.6]));
+        // set the specular color
+        gl.uniform3fv(programInfo.uniformLocations.specularColor, this.normalizeVector([1, 0.6, 0.6]));  
 
         {
             const numComponents = 3;
