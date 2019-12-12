@@ -133,6 +133,7 @@ export class PointLight extends Component {
                 worldInverseTranspose: this.gl.getUniformLocation(shaderProgram, "u_worldInverseTranspose"),
                 lightWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_lightWorldPosition"),
                 world: this.gl.getUniformLocation(shaderProgram, "u_world"),
+                viewWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_viewWorldPosition")
             },
         };
 
@@ -693,6 +694,8 @@ export class PointLight extends Component {
         // gl.uniform3fv(programInfo.uniformLocations.reverseLightDirection, this.normalizeVector([0.5, 0.7, 1]));
         gl.uniform3fv(programInfo.uniformLocations.lightWorldPosition, [20, 30, 50]);
 
+        // set the camera/view position
+        gl.uniform3fv(programInfo.uniformLocations.viewWorldPosition, camera);
 
         {
             const numComponents = 3;

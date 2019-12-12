@@ -3,6 +3,8 @@ export const vert = `
    attribute vec3 a_normal;
 
    uniform vec3 u_lightWorldPosition;
+   uniform vec3 u_viewWorldPosition;
+
    uniform mat4 u_world;
    uniform mat4 u_worldViewProjection;
    uniform mat4 u_worldInverseTranspose;
@@ -10,6 +12,7 @@ export const vert = `
    varying vec3 v_normal;
 
    varying vec3 v_surfaceToLight;
+   varying vec3 v_surfaceToView;
 
    void main() {
       // Multiply the position by the matrix.
@@ -25,6 +28,10 @@ export const vert = `
       // compute the vector of the surface to the light
       // and pass it to the fragment shader
       v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+
+      // compute the vector of the surface to the view/camera
+      // and pass it to the fragment shader
+      v_surfaceToView = u_viewWorldPosition - surfaceWorldPosition;
    }
 `;
 
@@ -33,7 +40,8 @@ export const frag = `
 
    varying vec3 v_normal;
    varying vec3 v_surfaceToLight;
-   
+   varying vec3 v_surfaceToView;
+
    uniform vec4 u_color;
 
    void main() {
@@ -43,14 +51,21 @@ export const frag = `
       // will make it a unit vector again
 
       vec3 normal = normalize(v_normal);
+
       vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+      vec3 surfaceToViewDirection = normalize(v_surfaceToView);
+      vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
       float light = dot(v_normal, surfaceToLightDirection);
+      float specular = dot(normal, halfVector);
 
       gl_FragColor = u_color;
 
       // Lets multiply just the color portion (not the alpha)
       // by the light
       gl_FragColor.rgb *= light;
+
+      // Just add in the specular
+      gl_FragColor.rgb += specular;
    }
 `;
