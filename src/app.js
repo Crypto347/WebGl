@@ -24,6 +24,7 @@ import Camera from './components/Camera/camera';
 import CameraLookAt from './components/CameraLookAt/cameraLookAt';
 import DirectionalLighting from './components/DirectionalLighting/directionalLighting';
 import PointLight from './components/PointLight/pointLight';
+import SpotLight from './components/SpotLight/spotLight';
 
 /**
 * Styles
@@ -48,7 +49,7 @@ export class App extends Component {
                 <Route 
                   exact 
                   path="/"
-                  component={ PointLight }
+                  component={ SpotLight }
                />
             </div>
       );
