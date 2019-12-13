@@ -663,7 +663,7 @@ export class SpotLight extends Component {
         
         // Compute the camera's matrix
         let camera = [80, 130, 180];
-        let target = [40, 55, 0];
+        let target = [20, 35, 0];
         let up = [0, 1, 0];
         let cameraMatrix = this.lookAt(camera, target, up);
 
