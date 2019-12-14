@@ -60,16 +60,20 @@ export const frag = `
       vec3 surfaceToViewDirection = normalize(v_surfaceToView);
       vec3 halfVector = normalize(surfaceToLightDirection + surfaceToViewDirection);
 
-      float light = 0.0;
-      float specular = 0.0;
+
       float dotFromDirection = dot(surfaceToLightDirection,-u_lightDirection);
 
-      if (dotFromDirection >= u_limit) {
-         light = dot(normal, surfaceToLightDirection);
-         if (light > 0.0) {
-           specular = pow(dot(normal, halfVector), u_shininess);
-         }
-      }
+      // if (dotFromDirection >= u_limit) {
+      //    light = dot(normal, surfaceToLightDirection);
+      //    if (light > 0.0) {
+      //      specular = pow(dot(normal, halfVector), u_shininess);
+      //    }
+      // }
+
+      float inLight = step(u_limit, dotFromDirection);
+      float light = inLight * dot(normal, surfaceToLightDirection);
+      float specular = inLight * pow(dot(normal, halfVector), u_shininess);
+
 
       gl_FragColor = u_color;
 
