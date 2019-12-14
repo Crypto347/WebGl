@@ -46,7 +46,8 @@ export const frag = `
    uniform float u_shininess;
 
    uniform vec3 u_lightDirection;
-   uniform float u_limit; 
+   uniform float u_innerLimit; 
+   uniform float u_outerLimit;  
 
    void main() {
 
@@ -70,7 +71,9 @@ export const frag = `
       //    }
       // }
 
-      float inLight = step(u_limit, dotFromDirection);
+      float limitRange = u_innerLimit - u_outerLimit;
+      // float inLight = step(u_limit, dotFromDirection);
+      float inLight = clamp((dotFromDirection - u_outerLimit) / limitRange, 0.0, 1.0);
       float light = inLight * dot(normal, surfaceToLightDirection);
       float specular = inLight * pow(dot(normal, halfVector), u_shininess);
 

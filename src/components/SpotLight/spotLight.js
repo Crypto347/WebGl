@@ -95,7 +95,9 @@ export class SpotLight extends Component {
             limit: 10,
             lightRotationX: 0,
             lightRotationY: 0,
-            lightDirection: [0, 0, 1]
+            lightDirection: [0, 0, 1],
+            innerLimit: 10,
+            outerLimit: 20
         };
     }
 
@@ -141,7 +143,9 @@ export class SpotLight extends Component {
                 viewWorldPosition: this.gl.getUniformLocation(shaderProgram, "u_viewWorldPosition"),
                 shininess: this.gl.getUniformLocation(shaderProgram, "u_shininess"),
                 lightDirection: this.gl.getUniformLocation(shaderProgram, "u_lightDirection"),
-                limit: this.gl.getUniformLocation(shaderProgram, "u_limit"),
+                // limit: this.gl.getUniformLocation(shaderProgram, "u_limit"),
+                innerLimit: this.gl.getUniformLocation(shaderProgram, "u_innerLimit"),
+                outerLimit: this.gl.getUniformLocation(shaderProgram, "u_outerLimit"),
             },
         };
 
@@ -727,7 +731,9 @@ export class SpotLight extends Component {
         }
 
         gl.uniform3fv(programInfo.uniformLocations.lightDirection, this.state.lightDirection);
-        gl.uniform1f(programInfo.uniformLocations.limit, Math.cos(this.state.limit * Math.PI / 180));
+        // gl.uniform1f(programInfo.uniformLocations.limit, Math.cos(this.state.limit * Math.PI / 180));
+        gl.uniform1f(programInfo.uniformLocations.innerLimit, Math.cos(this.state.innerLimit * Math.PI / 180));
+        gl.uniform1f(programInfo.uniformLocations.outerLimit, Math.cos(this.state.outerLimit * Math.PI / 180));
 
         {
             const numComponents = 3;
@@ -1317,7 +1323,31 @@ export class SpotLight extends Component {
             lightRotationY: updatedLightRotationY
         });
         this.updateCanvas();
-    }    
+    }   
+    
+    /**
+    * Inner Limit
+    */ 
+
+    handleOnChangeInnerLimit = (e) => {
+        let updatedInnerLimit = +e.target.value;
+        this.setState({
+            innerLimit: updatedInnerLimit
+        });
+        this.updateCanvas();
+    }   
+
+    /**
+    * Outer Limit
+    */ 
+
+    handleOnChangeOuterLimit = (e) => {
+        let updatedOuterLimit = +e.target.value;
+        this.setState({
+            outerLimit: updatedOuterLimit
+        });
+        this.updateCanvas();
+    }   
     
     /**
     * Markup
@@ -1358,8 +1388,12 @@ export class SpotLight extends Component {
                     <input type="range" value={this.state.lightRotationX} min="-100" max="100" step="1" onChange={() => this.handleOnChangeLightRotationX(event)}/>
                     <div>lightRotationY({this.state.lightRotationY})</div>
                     <input type="range" value={this.state.lightRotationY} min="-100" max="100" step="1" onChange={() => this.handleOnChangeLightRotationY(event)}/>
-                    <div>limit({this.state.limit})</div>
-                    <input type="range" value={this.state.limit} min="0" max="165" step="1" onChange={() => this.handleOnChangeLimit(event)}/>
+                    {/* <div>limit({this.state.limit})</div>
+                    <input type="range" value={this.state.limit} min="0" max="165" step="1" onChange={() => this.handleOnChangeLimit(event)}/> */}
+                    <div>innerLimit({this.state.innerLimit})</div>
+                    <input type="range" value={this.state.innerLimit} min="0" max="165" step="1" onChange={() => this.handleOnChangeInnerLimit(event)}/>
+                    <div>outerLimit({this.state.outerLimit})</div>
+                    <input type="range" value={this.state.outerLimit} min="0" max="165" step="1" onChange={() => this.handleOnChangeOuterLimit(event)}/>
                 </div>
             </div> 
         );
